@@ -1,5 +1,6 @@
 package com.example.laligainsight.api
 
+import com.example.laligainsight.modelo.TeamsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
