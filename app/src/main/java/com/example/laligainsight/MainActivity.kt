@@ -17,12 +17,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Prueba simple para probalar la llamada a la API en consola (LogCat)
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitCliente.api.getTeams()
 
                 if (response.isSuccessful) {
-                    Log.d("API_TEST", response.body().toString())
+
+                    val teams = response.body()?.teams
+
+                    teams?.forEach { team ->
+                        Log.d("API_TEST", team.name)
+                    }
+
                 } else {
                     Log.d("API_TEST", "Error: ${response.code()}")
                 }
@@ -31,6 +38,5 @@ class MainActivity : AppCompatActivity() {
                 Log.d("API_TEST", "Exception: ${e.message}")
             }
         }
-
-        }
     }
+}
