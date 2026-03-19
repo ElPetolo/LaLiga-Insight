@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -36,10 +37,12 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 }
 
 dependencies {
+    val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
 
     // AÑADIENDO LIBRERIAS NECESARIAS PARA EL DESARROLLO DEL PROYECTO
 
@@ -59,6 +62,20 @@ dependencies {
     // CardView
     implementation("androidx.cardview:cardview:1.0.0")
 
+    // Jetpack Compose
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // Cargar imágenes desde URL en Compose
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // Solo para preview/debug
+    debugImplementation("androidx.compose.ui:ui-tooling")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

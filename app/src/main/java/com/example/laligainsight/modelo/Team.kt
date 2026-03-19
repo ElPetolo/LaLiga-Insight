@@ -4,7 +4,8 @@ package com.example.laligainsight.modelo
 data class Team(
     val id: Int,
     val name: String,
-    val crest: String
+    val crest: String,
+    val venue: String? = null
 )
 
 

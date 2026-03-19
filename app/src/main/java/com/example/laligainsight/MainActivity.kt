@@ -1,66 +1,52 @@
 package com.example.laligainsight
 
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.laligainsight.api.RetrofitCliente
-import com.example.laligainsight.databinding.ActivityMainBinding
-import com.example.laligainsight.iu.EquiposAdapter
+import com.example.laligainsight.iu.TeamsScreen
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
-
-    // Binding para acceder a los elementos de la interfaz de usuario
-    private lateinit var binding: ActivityMainBinding
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
 
-        // Inicializamos el binding
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        // Al iniciar la app mostramos la pantalla Compose vacía
+        setContent {
+            TeamsScreen(teams = emptyList())
+        }
 
-        // Configuramos el RecyclerView
-        binding.recyclerEquipos.layoutManager = LinearLayoutManager(this)
-
-
-        // Llamamos a la API utilizando corrutinas
+        // Llamamos a la API usando corrutinas
         lifecycleScope.launch {
             try {
-
-                // peticiaon a la api para obtner los equipos de la liga española
+                // Petición a la API para obtener los equipos
                 val response = RetrofitCliente.api.getTeams()
 
+                // Si la respuesta es correcta
                 if (response.isSuccessful) {
 
-                    val teams = response.body()?.teams
+                    // Obtenemos la lista de equipos
+                    val teams = response.body()?.teams ?: emptyList()
 
-                    // Comprobamos que la lista de equipos no sea nula
-                    if (teams != null) {
-
-                        // Adapter donde pasamos la lista de equipos
-                        val adapter = EquiposAdapter(teams)
-
-                        // Conectamos el adapter al recyclerView
-                        binding.recyclerEquipos.adapter = adapter
+                    // Volvemos a pintar la pantalla, ahora con los datos reales
+                    setContent {
+                        TeamsScreen(teams = teams)
                     }
 
                 } else {
-                    // Si la api da error mostramos mensaje
-                    println("Error en la respuesta de la API: ${response.code()}")
+                    // Si hay error, mostramos la pantalla sin datos
+                    setContent {
+                        TeamsScreen(teams = emptyList())
+                    }
                 }
 
             } catch (e: Exception) {
-                // Aqui cogemos los posibles errores de conexión existentes
-                e.printStackTrace()
+                // Si ocurre un error de conexión, mostramos la pantalla vacía
+                setContent {
+                    TeamsScreen(teams = emptyList())
+                }
             }
         }
     }
