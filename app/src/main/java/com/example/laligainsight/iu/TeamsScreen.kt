@@ -1,5 +1,4 @@
 package com.example.laligainsight.iu
-
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,8 +50,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.laligainsight.modelo.Team
 
-
-
 // Pantalla principal donde se muestra la lista de equipos
 @Composable
 fun TeamsScreen(teams: List<Team>) {
@@ -71,9 +68,15 @@ fun TeamsScreen(teams: List<Team>) {
             .background(Color(0xFF08142E))
             .statusBarsPadding()
     ) {
-
         // Parte superior de la pantalla
-        TopSection()
+
+        // CAMBIO IMPORTANTE:
+        // Ahora pasamos el texto del buscador y la función para actualizarlo
+        // a TopSection(), para que el buscador filtre de verdad la lista.
+        TopSection(
+            searchText = searchText,
+            onSearchTextChange = { searchText = it }
+        )
 
         // Lista de equipos
         LazyColumn(
@@ -100,9 +103,17 @@ fun TeamsScreen(teams: List<Team>) {
 
 // Parte superior: menú, buscador y título
 @Composable
-fun TopSection() {
-    var searchText by remember { mutableStateOf("") }
+fun TopSection(
 
+    // CAMBIO IMPORTANTE:
+    // TopSection ya no crea su propio searchText.
+    // Recibe el valor desde TeamsScreen.
+    searchText: String,
+
+    // CAMBIO IMPORTANTE:
+    // Esta función actualiza el texto del buscador desde la pantalla principal.
+    onSearchTextChange: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -124,7 +135,12 @@ fun TopSection() {
 
             OutlinedTextField(
                 value = searchText,
-                onValueChange = { searchText = it },
+
+                // CAMBIO IMPORTANTE:
+                // Ahora el texto que se escribe aquí sí modifica el estado real
+                // que usa la lista para filtrar equipos.
+                onValueChange = onSearchTextChange,
+
                 placeholder = {
                     Text("Search teams...", color = Color.DarkGray)
                 },
@@ -180,13 +196,10 @@ fun TeamCard(team: Team) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.horizontalGradient(gradientColors)
-                )
+                .background(brush = Brush.horizontalGradient(gradientColors))
                 .padding(horizontal = 18.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             // Círculo blanco donde va el escudo
             Box(
                 modifier = Modifier
@@ -206,9 +219,7 @@ fun TeamCard(team: Team) {
             Spacer(modifier = Modifier.width(18.dp))
 
             // Nombre y estadio
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = team.name,
                     color = Color.White,
@@ -294,10 +305,8 @@ fun BottomBar() {
 }
 
 // Función para asignar un degradado distinto según el equipo
-@Composable
 fun getTeamGradient(teamName: String): List<Color> {
     return when (teamName) {
-
         "FC Barcelona" ->
             listOf(Color(0xFF1B2440), Color(0xFF1D4E9E), Color(0xFFB5123B))
 
