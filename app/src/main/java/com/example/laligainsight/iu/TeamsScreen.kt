@@ -1,6 +1,7 @@
 package com.example.laligainsight.iu
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +53,7 @@ import com.example.laligainsight.modelo.Team
 
 // Pantalla principal donde se muestra la lista de equipos
 @Composable
-fun TeamsScreen(teams: List<Team>) {
+fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit) {
 
     // Estado del buscador
     var searchText by remember { mutableStateOf("") }
@@ -87,7 +88,14 @@ fun TeamsScreen(teams: List<Team>) {
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             items(filteredTeams) { team ->
-                TeamCard(team)
+
+                // Introducimos el click
+                // Texto para probar que funciona
+                TeamCard(
+                    team = team,
+                    onClick = {
+                        onTeamClick(team)
+                    })
             }
 
             // Pequeño espacio al final para que no choque con la barra inferior
@@ -177,8 +185,9 @@ fun TopSection(
 }
 
 // Tarjeta de cada equipo
+// AMPLIACION: Hacemos que cada tarjeta de equipo sea clickable
 @Composable
-fun TeamCard(team: Team) {
+fun TeamCard(team: Team, onClick: () -> Unit) {
 
     // Colores del degradado según el equipo
     val gradientColors = getTeamGradient(team.name)
@@ -186,7 +195,8 @@ fun TeamCard(team: Team) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(126.dp),
+            .height(126.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
