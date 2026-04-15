@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.setValue
 import com.example.laligainsight.iu.PlayerDetailScreen
 import com.example.laligainsight.modelo.Player
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
 
         // Cambio feature/detalle-equipo
         // Llamamos a setContent una vez
