@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "956177550052",
+    "project_id": "laliga-players-images",
+    "storage_bucket": "laliga-players-images.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956177550052:android:cfedee9619f75d9481baf1",
+        "android_client_info": {
+          "package_name": "com.example.laligainsight"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdy1ExCrTEyUuil5PZZEzwjsc1APGj2OQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
