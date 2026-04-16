@@ -156,6 +156,7 @@ fun TopSection(
                 shape = RoundedCornerShape(30.dp),
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
+
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Buscar",

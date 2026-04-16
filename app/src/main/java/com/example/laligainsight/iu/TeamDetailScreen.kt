@@ -43,6 +43,8 @@ import com.example.laligainsight.api.RetrofitCliente
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.PlayerExtraInfo
 import com.example.laligainsight.modelo.Team
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 
 // función donde se muestra el detalle de cada equipo
 // recibe un objeto Team, que es el equipo que hemos pulsado
@@ -57,19 +59,46 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
     // Variable para los jugadores
     var players by remember { mutableStateOf<List<Player>>(emptyList()) }
 
+    var playerImages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+    val db = Firebase.firestore
+
+
     // Llamada a la API para obtener los jugadores
     LaunchedEffect(team.id) {
         try {
+            // 1. Cargar jugadores desde la API
             val response = RetrofitCliente.api.getTeamDetail(team.id)
-
-            // Con esto vemos que datos podemos meter de cada jugador
-            android.util.Log.d("API_RESPONSE", response.body().toString())
 
             if (response.isSuccessful) {
                 players = response.body()?.squad ?: emptyList()
 
+                // 2. Consultar Firebase SOLO de este equipo
+                db.collection("player_images")
+                    .whereEqualTo("teamName", team.name)
+                    .get()
+                    .addOnSuccessListener { result ->
+
+                        // Creamos mapa nombre → imagen
+                        val imagesMap = mutableMapOf<String, String>()
+
+                        for (document in result) {
+                            val playerName = document.getString("playerName") ?: ""
+                            val imageUrl = document.getString("imageUrl") ?: ""
+
+                            // Solo guardamos si todo está bien
+                            if (playerName.isNotBlank() && imageUrl.isNotBlank()) {
+                                imagesMap[playerName] = imageUrl
+                            }
+                        }
+
+                        // Guardamos en estado → esto hace recomposición
+                        playerImages = imagesMap
+                    }
+            } else {
+                players = emptyList()
             }
-        } catch (e: Exception){
+
+        } catch (e: Exception) {
             players = emptyList()
         }
     }
@@ -266,18 +295,37 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                                         verticalAlignment = Alignment.CenterVertically
                                 ){
 
-                                    // F0TO DEL JUGADOR --> placeholder momentaneo
-                                    Box(
-                                        modifier = Modifier
-                                            .size(50.dp)
-                                            .background(Color.Gray, shape = CircleShape),
-                                        contentAlignment = Alignment.Center
-                                    ){
-                                        Text(
-                                            text = player.name.first().toString(),
-                                            color = Color.White
+                                    // F0TO DEL JUGADOR
+                                    // Buscamos si hay imagen en Firebase
+                                    val imageUrl = playerImages[player.name]
+
+                                    // Si hay imagen → la mostramos
+                                    if (!imageUrl.isNullOrBlank()) {
+                                        AsyncImage(
+                                            model = imageUrl,
+                                            contentDescription = player.name,
+                                            modifier = Modifier
+                                                .size(60.dp)
+                                                .background(Color.White, shape = CircleShape),
+                                            contentScale = ContentScale.Crop
                                         )
                                     }
+
+                                    // Si no hay → inicial (fallback)
+                                    else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(60.dp)
+                                                .background(Color.White, shape = CircleShape),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = player.name.first().toString(),
+                                                color = Color.DarkGray
+                                            )
+                                        }
+                                    }
+
 
                                     Spacer(modifier = Modifier.width(12.dp))
 
