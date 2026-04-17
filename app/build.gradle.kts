@@ -78,7 +78,6 @@ dependencies {
     // Solo para preview/debug
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    //SplashScreen
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     implementation(libs.androidx.core.ktx)

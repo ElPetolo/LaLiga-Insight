@@ -3,94 +3,226 @@ package com.example.laligainsight
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
+import coil.compose.AsyncImage
 import com.example.laligainsight.api.RetrofitCliente
+import com.example.laligainsight.iu.PlayerDetailScreen
 import com.example.laligainsight.iu.TeamDetailScreen
 import com.example.laligainsight.iu.TeamsScreen
-import com.example.laligainsight.modelo.Team
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.setValue
-import com.example.laligainsight.iu.PlayerDetailScreen
 import com.example.laligainsight.modelo.Player
+import com.example.laligainsight.modelo.Team
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    // CAMBIO feature/detalle-equipo:
-    // Variable donde guardamos el equipo pulsado
-    // si es null ---> pantalla principal
-    // si no --> mostramos el detalle del equipo
     private var selectedTeam by mutableStateOf<Team?>(null)
-
-    // CAMBIO feature/detalle-equipo:
-    // Variable donde guardamos la lista de equipos obtenidos por la  api
-    // De esta manera, no llamamos a setContent tantas veces
     private var teams by mutableStateOf<List<Team>>(emptyList())
-
-    // Variable para el juagdor seleccionado
     private var selectedPlayer by mutableStateOf<Player?>(null)
-
+    private var showSplash by mutableStateOf(true)
+    private var composeReady by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
 
-        // Cambio feature/detalle-equipo
-        // Llamamos a setContent una vez
+        // Mantiene el splash del sistema hasta que Compose esté listo
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { !composeReady }
+
+        lifecycleScope.launch {
+            delay(2500L)
+            showSplash = false
+        }
+
         setContent {
-            when {
-                selectedPlayer != null -> {
-                    PlayerDetailScreen(
-                        player = selectedPlayer!!,
-                        onBackClick = { selectedPlayer = null }
-                    )
-                }
+            LaunchedEffect(Unit) {
+                composeReady = true // Compose listo → splash del sistema desaparece
+            }
 
-                selectedTeam != null -> {
-                    TeamDetailScreen(
-                        team = selectedTeam!!,
-                        onBackClick = { selectedTeam = null },
-                        onPlayerClick = { player ->
-                            selectedPlayer = player
-                        }
-                    )
-                }
-
-                else -> {
-                    TeamsScreen(
-                        teams = teams,
-                        onTeamClick = { team ->
-                            selectedTeam = team
-                        }
-                    )
+            if (showSplash) {
+                SplashScreen()
+            } else {
+                when {
+                    selectedPlayer != null -> {
+                        PlayerDetailScreen(
+                            player = selectedPlayer!!,
+                            onBackClick = { selectedPlayer = null }
+                        )
+                    }
+                    selectedTeam != null -> {
+                        TeamDetailScreen(
+                            team = selectedTeam!!,
+                            onBackClick = { selectedTeam = null },
+                            onPlayerClick = { player -> selectedPlayer = player }
+                        )
+                    }
+                    else -> {
+                        TeamsScreen(
+                            teams = teams,
+                            onTeamClick = { team -> selectedTeam = team }
+                        )
+                    }
                 }
             }
         }
 
-            // Llamamos a la API usando corrutinas
-            lifecycleScope.launch {
-                try {
-                    // Petición a la API para obtener los equipos
-                    val response = RetrofitCliente.api.getTeams()
-
-                    // Si la respuesta es correcta
-                    if (response.isSuccessful) {
-
-                        // Obtenemos la lista de equipos
-                        teams = response.body()?.teams ?: emptyList()
-
-                    } else {
-                        // Mostramos la lista vacía si la respuesta no es correcta
-                        teams = emptyList()
-                    }
-
-                } catch (e: Exception) {
-                    // Si ocurre un error de conexión, mostramos la lista vacía
-                    teams = emptyList()
-                }
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitCliente.api.getTeams()
+                teams = if (response.isSuccessful) response.body()?.teams ?: emptyList()
+                else emptyList()
+            } catch (e: Exception) {
+                teams = emptyList()
             }
         }
     }
+}
 
+@Composable
+fun SplashScreen() {
+    val infiniteTransition = rememberInfiniteTransition(label = "loader")
+    val progress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1800, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "progress"
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0D1F1A),
+                        Color(0xFF0A1A14),
+                        Color(0xFF060E0B)
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(300.dp)
+                .align(Alignment.TopCenter)
+                .offset(y = (-80).dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0x551D9E75), Color(0x001D9E75))
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(155.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(155.dp)
+                        .clip(CircleShape)
+                        .background(Color(0x1A1D9E75))
+                )
+                Box(
+                    modifier = Modifier
+                        .size(130.dp)
+                        .clip(CircleShape)
+                        .background(Color(0x261D9E75))
+                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(110.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF0F6E56))
+                ) {
+                    AsyncImage(
+                        model = R.drawable.isotipo,
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(70.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Row {
+                Text(
+                    text = "LaLiga",
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.02).em
+                )
+                Text(
+                    text = "Insight",
+                    color = Color(0xFF1D9E75),
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.02).em
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "ESTADÍSTICAS EN TIEMPO REAL",
+                color = Color(0x61FFFFFF),
+                fontSize = 10.sp,
+                letterSpacing = 0.2.em
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(2.dp)
+                    .clip(CircleShape),
+                color = Color(0xFF1D9E75),
+                trackColor = Color(0x1AFFFFFF)
+            )
+
+            Spacer(modifier = Modifier.height(56.dp))
+        }
+
+        Text(
+            text = "by petolo",
+            color = Color(0x33FFFFFF),
+            fontSize = 10.sp,
+            letterSpacing = 0.15.em,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 32.dp)
+        )
+    }
+}

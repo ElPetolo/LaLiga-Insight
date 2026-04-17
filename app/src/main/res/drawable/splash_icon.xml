@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Círculo de fondo verde oscuro -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#0F6E56" />
+        </shape>
+    </item>
+
+    <!-- Tu isotipo centrado -->
     <item
         android:drawable="@drawable/isotipo"
         android:gravity="center"
-        android:width="75dp"
-        android:height="75dp"/>
+        android:width="60dp"
+        android:height="60dp" />
+
 </layer-list>
