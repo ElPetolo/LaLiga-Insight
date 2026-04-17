@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Splash screen colors -->
+    <color name="splash_bg">#060E0B</color>
+    <color name="splash_primary">#1D9E75</color>
+    <color name="splash_primary_dark">#0F6E56</color>
 </resources>
