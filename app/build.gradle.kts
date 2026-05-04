@@ -80,6 +80,14 @@ dependencies {
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // FIREBASE AUTH
+    implementation("com.google.firebase:firebase-auth")
+
+    // LOGIN CON GOOGLE
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -94,4 +102,10 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
+
+    // GOOGLE LOGIN CON CREDENTIAL MANAGER
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 }
