@@ -33,6 +33,8 @@ import com.example.laligainsight.iu.TeamsScreen
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.Team
 import com.google.firebase.auth.FirebaseAuth
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.laligainsight.iu.StandingsScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.example.laligainsight.iu.EditProfileScreen
@@ -40,11 +42,19 @@ import com.example.laligainsight.iu.PrivacySecurityScreen
 import com.example.laligainsight.iu.FriendsScreen
 import com.example.laligainsight.iu.UserProfileScreen
 
+
+enum class MainTab{
+    TEAMS, STANDINGS, COMPARE, PROFILE
+}
+
 class MainActivity : ComponentActivity() {
 
     private var selectedTeam by mutableStateOf<Team?>(null)
     private var teams by mutableStateOf<List<Team>>(emptyList())
     private var selectedPlayer by mutableStateOf<Player?>(null)
+
+    private var selectedTab by mutableStateOf(MainTab.TEAMS)
+
     private var showSplash by mutableStateOf(true)
     private var composeReady by mutableStateOf(false)
     private var isCheckingAuth by mutableStateOf(true)
@@ -57,6 +67,8 @@ class MainActivity : ComponentActivity() {
     private var selectedUserId by mutableStateOf<String?>(null)
 
     private var showUserProfileScreen by mutableStateOf(false)
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +98,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LaunchedEffect(Unit) {
-                composeReady = true
+
+                composeReady = true // Compose listo -> splash del sistema desaparece
             }
 
             if (showSplash || isCheckingAuth) {
@@ -207,7 +220,7 @@ class MainActivity : ComponentActivity() {
 
                     selectedPlayer != null -> {
                         PlayerDetailScreen(
-                            player = selectedPlayer!!,
+                            player = selectedPlayer!!, // Suponemos que selectedPlayer no es nulo
                             onBackClick = { selectedPlayer = null }
                         )
                     }
@@ -221,11 +234,49 @@ class MainActivity : ComponentActivity() {
                     }
 
                     else -> {
-                        TeamsScreen(
-                            teams = teams,
-                            onTeamClick = { team -> selectedTeam = team },
-                            onProfileClick = { showProfile = true }
-                        )
+
+                        // Mantenemos la navegación principal por pestañas.
+                        // Esto respeta el flujo que ya existía en main.
+                        when (selectedTab) {
+
+                            // Pantalla principal de equipos
+                            MainTab.TEAMS -> {
+                                TeamsScreen(
+                                    teams = teams,
+
+                                    // Al pulsar un equipo, se abre su detalle.
+                                    // Esto ya estaba funcionando y no lo tocamos.
+                                    onTeamClick = { team ->
+                                        selectedTeam = team
+                                    },
+
+                                    // Nuevo: desde TeamsScreen podemos ir a Rankings.
+                                    onRankingClick = {
+                                        selectedTab = MainTab.STANDINGS
+                                    }
+                                )
+                            }
+
+                            // Pantalla nueva de clasificación/goleadores
+                            MainTab.STANDINGS -> {
+                                StandingsScreen(
+                                    // Volvemos a equipos sin romper la navegación general
+                                    onBackClick = {
+                                        selectedTab = MainTab.TEAMS
+                                    }
+                                )
+                            }
+
+                            // Lo dejamos provisional para no romper el tab
+                            MainTab.COMPARE -> {
+                                Text("Comparador")
+                            }
+
+                            // Lo dejamos provisional para no tocar aún el perfil/login de Héctor
+                            MainTab.PROFILE -> {
+                                Text("Perfil")
+                            }
+                        }
                     }
                 }
             }
@@ -234,14 +285,21 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             try {
                 val response = RetrofitCliente.api.getTeams()
-                teams = if (response.isSuccessful) response.body()?.teams ?: emptyList()
-                else emptyList()
+                teams = if (response.isSuccessful) {
+                    response.body()?.teams ?: emptyList()
+                } else {
+                  emptyList()
+                }
             } catch (e: Exception) {
                 teams = emptyList()
             }
         }
     }
 }
+
+
+
+
 
 @Composable
 fun SplashScreen() {
@@ -360,7 +418,7 @@ fun SplashScreen() {
         }
 
         Text(
-            text = "by petolo",
+            text = "HÉCTOR CUÉLLAR Y CÉSAR ALONSO",
             color = Color(0x33FFFFFF),
             fontSize = 10.sp,
             letterSpacing = 0.15.em,

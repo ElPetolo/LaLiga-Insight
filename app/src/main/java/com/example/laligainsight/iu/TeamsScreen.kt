@@ -37,16 +37,17 @@ import coil.compose.AsyncImage
 import com.example.laligainsight.modelo.Team
 
 @Composable
-fun TeamsScreen(
-    teams: List<Team>,
-    onTeamClick: (Team) -> Unit,
-    onProfileClick: () -> Unit
-) {
+fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit, onProfileClick: () -> Unit,  onRankingClick: () -> Unit) {
+
+    // Estado del buscador
     var searchText by remember { mutableStateOf("") }
 
+
+    // Filtramos los equipos según el texto de búsqueda
     val filteredTeams = teams.filter {
         it.name.contains(searchText, ignoreCase = true)
     }
+
 
     Column(
         modifier = Modifier
@@ -54,11 +55,14 @@ fun TeamsScreen(
             .background(Color(0xFF08142E))
             .statusBarsPadding()
     ) {
+
+        // Parte superior: buscador y título
         TopSection(
             searchText = searchText,
             onSearchTextChange = { searchText = it }
         )
 
+        // Lista de equipos
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -66,20 +70,27 @@ fun TeamsScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+
+            // Recorremos los equipos filtrados
             items(filteredTeams) { team ->
+
+                // Card de cada equipo
                 TeamCard(
                     team = team,
                     onClick = { onTeamClick(team) }
                 )
             }
 
+            // Espacio extra al final, no queda tan pegado a la barra
             item {
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
 
+        // Barra inferior
         BottomBar(
-            onProfileClick = onProfileClick
+            onProfileClick = onProfileClick,
+            onRankingClick = onRankingClick
         )
     }
 }
@@ -220,7 +231,8 @@ fun TeamCard(
 
 @Composable
 fun BottomBar(
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onRankingClick: () -> Unit
 ) {
     NavigationBar(
         modifier = Modifier.navigationBarsPadding(),
@@ -228,7 +240,7 @@ fun BottomBar(
     ) {
         NavigationBarItem(
             selected = true,
-            onClick = { },
+            onClick = {onRankingClick()},
             icon = {
                 Icon(
                     imageVector = Icons.Default.Star,
@@ -236,14 +248,13 @@ fun BottomBar(
                     tint = Color.White
                 )
             },
-            label = {
-                Text("Rankings", color = Color.White)
-            }
+            label = { Text("Rankings", color = Color.White) }
         )
 
         NavigationBarItem(
-            selected = false,
-            onClick = { },
+            selected = true,
+            // todavía no lleva a nada
+            onClick = {},
             icon = {
                 Icon(
                     imageVector = Icons.Default.CompareArrows,

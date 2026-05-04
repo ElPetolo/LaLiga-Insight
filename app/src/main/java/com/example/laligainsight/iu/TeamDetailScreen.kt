@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,13 +39,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.laligainsight.api.RetrofitCliente
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.PlayerExtraInfo
 import com.example.laligainsight.modelo.Team
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.example.laligainsight.viewmodel.PlayersViewModel
+
 
 // función donde se muestra el detalle de cada equipo
 // recibe un objeto Team, que es el equipo que hemos pulsado
@@ -59,49 +61,32 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
     // Variable para los jugadores
     var players by remember { mutableStateOf<List<Player>>(emptyList()) }
 
-    // Variable para los jugadores con sus imágenes
-    var playerImages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
 
-    // Instancia a la base de datos
-    val db = Firebase.firestore
+    // --- VARIABLES PARA EL VIEWMODEL DE JUGADORES Y FIREBASE ---
+    val playersViewModel: PlayersViewModel = viewModel()
+    val firebasePlayers by playersViewModel.players.collectAsState()
 
 
-    // Llamada a la API para obtener los jugadores
+    // Ejecuta cuando cambia el ID del equipo o se entra por primera vez
     LaunchedEffect(team.id) {
         try {
-            // 1. Cargar jugadores desde la API
+            // 1. Llamamos a la API para traer el detalle del equipo
             val response = RetrofitCliente.api.getTeamDetail(team.id)
 
-            if (response.isSuccessful) {
-                players = response.body()?.squad ?: emptyList()
+            // Si la respuesta es exitosa...
+            players = if (response.isSuccessful) {
 
-                // 2. Consultar Firebase SOLO de este equipo
-                db.collection("player_images")
-                    .whereEqualTo("teamName", team.name)
-                    .get()
-                    .addOnSuccessListener { result ->
-
-                        // Creamos mapa nombre → imagen
-                        val imagesMap = mutableMapOf<String, String>()
-
-                        for (document in result) {
-                            val playerName = document.getString("playerName") ?: ""
-                            val imageUrl = document.getString("imageUrl") ?: ""
-
-                            // Solo guardamos si todo está bien
-                            if (playerName.isNotBlank() && imageUrl.isNotBlank()) {
-                                imagesMap[playerName] = imageUrl
-                            }
-                        }
-
-                        // Guardamos en estado → esto hace recomposición
-                        playerImages = imagesMap
-                    }
+                // Obtenemos los jugadores
+                response.body()?.squad ?: emptyList()
             } else {
-                players = emptyList()
+
+                // Si la respuesta falla --> lista vacía
+                emptyList()
             }
 
         } catch (e: Exception) {
+
+            // Si ocurre un error evitamos el crash y dejamos la lista vacía
             players = emptyList()
         }
     }
@@ -300,7 +285,9 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
 
                                     // F0TO DEL JUGADOR
                                     // Buscamos si hay imagen en Firebase
-                                    val imageUrl = playerImages[player.name]
+                                    val imageUrl = firebasePlayers
+                                        .firstOrNull { it.playerName == player.name }
+                                        ?.imageUrl
 
                                     Box(
                                         modifier = Modifier
