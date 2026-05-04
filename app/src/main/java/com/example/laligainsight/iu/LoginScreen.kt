@@ -121,6 +121,37 @@ fun LoginScreen(
                         colors = authTextFieldColors()
                     )
 
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    TextButton(
+                        onClick = {
+                            scope.launch {
+                                if (email.isBlank()) {
+                                    error = "Introduce tu correo para recuperar la contraseña"
+                                    return@launch
+                                }
+
+                                try {
+                                    loading = true
+                                    error = null
+                                    authRepository.resetPassword(email.trim())
+                                    error = "Te hemos enviado un correo para restablecer la contraseña"
+                                } catch (e: Exception) {
+                                    Log.e("RESET_PASSWORD", "Error reset password", e)
+                                    error = e.localizedMessage ?: "No se pudo enviar el correo"
+                                } finally {
+                                    loading = false
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "¿Has olvidado tu contraseña?",
+                            color = Color(0xFF1D9E75)
+                        )
+                    }
+
                     error?.let {
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
@@ -141,8 +172,8 @@ fun LoginScreen(
                                     authRepository.login(email.trim(), password)
                                     onLoginSuccess()
                                 } catch (e: Exception) {
-                                    Log.e("GOOGLE_AUTH", "Error Google Sign-In", e)
-                                    error = e.localizedMessage ?: "Error al iniciar sesión con Google"
+                                    Log.e("EMAIL_AUTH", "Error Email Sign-In", e)
+                                    error = e.localizedMessage ?: "Correo o contraseña incorrectos"
                                 } finally {
                                     loading = false
                                 }

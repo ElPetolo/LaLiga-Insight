@@ -41,7 +41,9 @@ class MainActivity : ComponentActivity() {
     private var selectedPlayer by mutableStateOf<Player?>(null)
     private var showSplash by mutableStateOf(true)
     private var composeReady by mutableStateOf(false)
+    private var isCheckingAuth by mutableStateOf(true)
     private var isLoggedIn by mutableStateOf(false)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,14 +59,17 @@ class MainActivity : ComponentActivity() {
 
         FirebaseAuth.getInstance().currentUser?.reload()
             ?.addOnCompleteListener { task ->
-                isLoggedIn = if (task.isSuccessful) {
-                    FirebaseAuth.getInstance().currentUser != null
+                if (task.isSuccessful && FirebaseAuth.getInstance().currentUser != null) {
+                    isLoggedIn = true
                 } else {
                     FirebaseAuth.getInstance().signOut()
-                    false
+                    isLoggedIn = false
                 }
+
+                isCheckingAuth = false
             } ?: run {
             isLoggedIn = false
+            isCheckingAuth = false
         }
 
         setContent {
@@ -72,14 +77,22 @@ class MainActivity : ComponentActivity() {
                 composeReady = true
             }
 
-            if (showSplash) {
+            if (showSplash || isCheckingAuth) {
+
                 SplashScreen()
+
             } else if (!isLoggedIn) {
+
                 AuthScreen(
+
                     onLoginSuccess = {
+
                         isLoggedIn = true
+
                     }
+
                 )
+
             } else {
                 when {
                     selectedPlayer != null -> {

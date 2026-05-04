@@ -19,8 +19,10 @@ class GoogleAuthClient(
     suspend fun signInWithGoogle() {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
+            .setAutoSelectEnabled(false)
             .setServerClientId(context.getString(R.string.default_web_client_id))
             .build()
+
 
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(googleIdOption)
