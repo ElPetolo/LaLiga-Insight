@@ -20,19 +20,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
 import com.example.laligainsight.api.RetrofitCliente
+import com.example.laligainsight.iu.AuthScreen
+import com.example.laligainsight.iu.FavoriteTeamScreen
 import com.example.laligainsight.iu.PlayerDetailScreen
+import com.example.laligainsight.iu.ProfileScreen
 import com.example.laligainsight.iu.TeamDetailScreen
 import com.example.laligainsight.iu.TeamsScreen
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.Team
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.example.laligainsight.iu.AuthScreen
-import com.google.firebase.auth.FirebaseAuth
+import com.example.laligainsight.iu.EditProfileScreen
+import com.example.laligainsight.iu.PrivacySecurityScreen
+import com.example.laligainsight.iu.FriendsScreen
+import com.example.laligainsight.iu.UserProfileScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -43,12 +49,18 @@ class MainActivity : ComponentActivity() {
     private var composeReady by mutableStateOf(false)
     private var isCheckingAuth by mutableStateOf(true)
     private var isLoggedIn by mutableStateOf(false)
+    private var showProfile by mutableStateOf(false)
+    private var showFavoriteTeamScreen by mutableStateOf(false)
+    private var showEditProfileScreen by mutableStateOf(false)
+    private var showPrivacySecurityScreen by mutableStateOf(false)
+    private var showFriendsScreen by mutableStateOf(false)
+    private var selectedUserId by mutableStateOf<String?>(null)
 
+    private var showUserProfileScreen by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Mantiene el splash del sistema hasta que Compose esté listo
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { !composeReady }
 
@@ -78,23 +90,121 @@ class MainActivity : ComponentActivity() {
             }
 
             if (showSplash || isCheckingAuth) {
-
                 SplashScreen()
-
             } else if (!isLoggedIn) {
-
                 AuthScreen(
-
                     onLoginSuccess = {
-
                         isLoggedIn = true
-
                     }
-
                 )
-
             } else {
                 when {
+
+                    selectedUserId != null -> {
+                        UserProfileScreen(
+                            userId = selectedUserId!!,
+                            onBack = {
+                                selectedUserId = null
+                                showUserProfileScreen = false
+                                showFriendsScreen = true
+                            }
+                        )
+                    }
+
+                    showFavoriteTeamScreen -> {
+                        FavoriteTeamScreen(
+                            teams = teams,
+                            onTeamSelected = {
+                                showFavoriteTeamScreen = false
+                                showProfile = true
+                            }
+                        )
+                    }
+
+                    showEditProfileScreen -> {
+                        EditProfileScreen(
+                            currentUsername = "",
+                            currentProfileImageUrl = "",
+                            onBack = {
+                                showEditProfileScreen = false
+                                showProfile = true
+                            },
+                            onSaved = {
+                                showEditProfileScreen = false
+                                showProfile = false
+
+                                showProfile = true
+                            }
+                        )
+                    }
+
+                    showPrivacySecurityScreen -> {
+                        PrivacySecurityScreen(
+                            onBack = {
+                                showPrivacySecurityScreen = false
+                                showProfile = true
+                            },
+                            onLogout = {
+                                FirebaseAuth.getInstance().signOut()
+                                isLoggedIn = false
+                                showPrivacySecurityScreen = false
+                                showProfile = false
+                                showFavoriteTeamScreen = false
+                                showEditProfileScreen = false
+                                selectedTeam = null
+                                selectedPlayer = null
+                            }
+                        )
+                    }
+
+                    showFriendsScreen -> {
+                        FriendsScreen(
+                            onBack = {
+                                showFriendsScreen = false
+                                showProfile = true
+                            },
+                            onUserClick = { userId ->
+                                selectedUserId = userId
+                                showFriendsScreen = false
+                            }
+                        )
+                    }
+
+                    showProfile -> {
+                        ProfileScreen(
+                            teams = teams,
+                            onHomeClick = {
+                                showProfile = false
+                                showFavoriteTeamScreen = false
+                            },
+                            onSelectTeamClick = {
+                                showFavoriteTeamScreen = true
+                                showProfile = false
+                            },
+                            onEditProfileClick = {
+                                showEditProfileScreen = true
+                                showProfile = false
+                            },
+                            onPrivacySecurityClick = {
+                                showPrivacySecurityScreen = true
+                                showProfile = false
+                            },
+                            onFriendsClick = {
+                                showFriendsScreen = true
+                                showProfile = false
+                            },
+                            onLogout = {
+                                FirebaseAuth.getInstance().signOut()
+                                isLoggedIn = false
+                                showProfile = false
+                                showFavoriteTeamScreen = false
+                                showEditProfileScreen = false
+                                selectedTeam = null
+                                selectedPlayer = null
+                            }
+                        )
+                    }
+
                     selectedPlayer != null -> {
                         PlayerDetailScreen(
                             player = selectedPlayer!!,
@@ -113,7 +223,8 @@ class MainActivity : ComponentActivity() {
                     else -> {
                         TeamsScreen(
                             teams = teams,
-                            onTeamClick = { team -> selectedTeam = team }
+                            onTeamClick = { team -> selectedTeam = team },
+                            onProfileClick = { showProfile = true }
                         )
                     }
                 }
@@ -176,10 +287,7 @@ fun SplashScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.size(155.dp)
-            ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(155.dp)) {
                 Box(
                     modifier = Modifier
                         .size(155.dp)

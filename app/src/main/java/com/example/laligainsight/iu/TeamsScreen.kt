@@ -1,20 +1,8 @@
 package com.example.laligainsight.iu
-import androidx.compose.material3.Icon
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -28,17 +16,14 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,14 +36,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.laligainsight.modelo.Team
 
-// Pantalla principal donde se muestra la lista de equipos
 @Composable
-fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit) {
-
-    // Estado del buscador
+fun TeamsScreen(
+    teams: List<Team>,
+    onTeamClick: (Team) -> Unit,
+    onProfileClick: () -> Unit
+) {
     var searchText by remember { mutableStateOf("") }
 
-    // Filtramos equipos por nombre según lo que escriba el usuario
     val filteredTeams = teams.filter {
         it.name.contains(searchText, ignoreCase = true)
     }
@@ -69,17 +54,11 @@ fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit) {
             .background(Color(0xFF08142E))
             .statusBarsPadding()
     ) {
-        // Parte superior de la pantalla
-
-        // CAMBIO IMPORTANTE:
-        // Ahora pasamos el texto del buscador y la función para actualizarlo
-        // a TopSection(), para que el buscador filtre de verdad la lista.
         TopSection(
             searchText = searchText,
             onSearchTextChange = { searchText = it }
         )
 
-        // Lista de equipos
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -88,38 +67,26 @@ fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             items(filteredTeams) { team ->
-
-                // Introducimos el click
-                // Texto para probar que funciona
                 TeamCard(
                     team = team,
-                    onClick = {
-                        onTeamClick(team)
-                    })
+                    onClick = { onTeamClick(team) }
+                )
             }
 
-            // Pequeño espacio al final para que no choque con la barra inferior
             item {
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
 
-        // Barra inferior
-        BottomBar()
+        BottomBar(
+            onProfileClick = onProfileClick
+        )
     }
 }
 
-// Parte superior: menú, buscador y título
 @Composable
 fun TopSection(
-
-    // CAMBIO IMPORTANTE:
-    // TopSection ya no crea su propio searchText.
-    // Recibe el valor desde TeamsScreen.
     searchText: String,
-
-    // CAMBIO IMPORTANTE:
-    // Esta función actualiza el texto del buscador desde la pantalla principal.
     onSearchTextChange: (String) -> Unit
 ) {
     Column(
@@ -143,12 +110,7 @@ fun TopSection(
 
             OutlinedTextField(
                 value = searchText,
-
-                // CAMBIO IMPORTANTE:
-                // Ahora el texto que se escribe aquí sí modifica el estado real
-                // que usa la lista para filtrar equipos.
                 onValueChange = onSearchTextChange,
-
                 placeholder = {
                     Text("Search teams...", color = Color.DarkGray)
                 },
@@ -156,7 +118,6 @@ fun TopSection(
                 shape = RoundedCornerShape(30.dp),
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
-
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Buscar",
@@ -185,12 +146,11 @@ fun TopSection(
     }
 }
 
-// Tarjeta de cada equipo
-// AMPLIACION: Hacemos que cada tarjeta de equipo sea clickable
 @Composable
-fun TeamCard(team: Team, onClick: () -> Unit) {
-
-    // Colores del degradado según el equipo
+fun TeamCard(
+    team: Team,
+    onClick: () -> Unit
+) {
     val gradientColors = getTeamGradient(team.name)
 
     Card(
@@ -211,7 +171,6 @@ fun TeamCard(team: Team, onClick: () -> Unit) {
                 .padding(horizontal = 18.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Círculo blanco donde va el escudo
             Box(
                 modifier = Modifier
                     .size(82.dp)
@@ -229,7 +188,6 @@ fun TeamCard(team: Team, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.width(18.dp))
 
-            // Nombre y estadio
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = team.name,
@@ -250,7 +208,6 @@ fun TeamCard(team: Team, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Flecha de la derecha
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = "Ir al detalle",
@@ -261,9 +218,10 @@ fun TeamCard(team: Team, onClick: () -> Unit) {
     }
 }
 
-// Barra inferior parecida al diseño
 @Composable
-fun BottomBar() {
+fun BottomBar(
+    onProfileClick: () -> Unit
+) {
     NavigationBar(
         modifier = Modifier.navigationBarsPadding(),
         containerColor = Color(0xFF27324B)
@@ -300,7 +258,7 @@ fun BottomBar() {
 
         NavigationBarItem(
             selected = false,
-            onClick = { },
+            onClick = onProfileClick,
             icon = {
                 Icon(
                     imageVector = Icons.Default.PersonOutline,
@@ -315,7 +273,6 @@ fun BottomBar() {
     }
 }
 
-// Función para asignar un degradado distinto según el equipo
 fun getTeamGradient(teamName: String): List<Color> {
     return when (teamName) {
         "FC Barcelona" ->
