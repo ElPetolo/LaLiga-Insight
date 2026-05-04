@@ -59,7 +59,10 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
     // Variable para los jugadores
     var players by remember { mutableStateOf<List<Player>>(emptyList()) }
 
+    // Variable para los jugadores con sus imágenes
     var playerImages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    // Instancia a la base de datos
     val db = Firebase.firestore
 
 
@@ -299,32 +302,30 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                                     // Buscamos si hay imagen en Firebase
                                     val imageUrl = playerImages[player.name]
 
-                                    // Si hay imagen → la mostramos
-                                    if (!imageUrl.isNullOrBlank()) {
-                                        AsyncImage(
-                                            model = imageUrl,
-                                            contentDescription = player.name,
-                                            modifier = Modifier
-                                                .size(60.dp)
-                                                .background(Color.White, shape = CircleShape),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-
-                                    // Si no hay → inicial (fallback)
-                                    else {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(60.dp)
-                                                .background(Color.White, shape = CircleShape),
-                                            contentAlignment = Alignment.Center
-                                        ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(68.dp)
+                                            .background(Color.White, shape = CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (!imageUrl.isNullOrBlank()) {
+                                            AsyncImage(
+                                                model = imageUrl,
+                                                contentDescription = player.name,
+                                                modifier = Modifier
+                                                    .size(52.dp), // más pequeña dentro del círculo
+                                                contentScale = ContentScale.Fit
+                                            )
+                                        } else {
                                             Text(
                                                 text = player.name.first().toString(),
-                                                color = Color.DarkGray
+                                                color = Color.DarkGray,
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold
                                             )
                                         }
                                     }
+
 
 
                                     Spacer(modifier = Modifier.width(12.dp))
