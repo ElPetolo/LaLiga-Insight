@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.foundation.layout.android)
     val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
 
     // AÑADIENDO LIBRERIAS NECESARIAS PARA EL DESARROLLO DEL PROYECTO
@@ -94,4 +95,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+    implementation("androidx.compose.ui:ui-text-google-fonts")
 }

@@ -53,7 +53,7 @@ import com.example.laligainsight.modelo.Team
 
 // Pantalla principal donde se muestra la lista de equipos
 @Composable
-fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit) {
+fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit, onRankingClick: () -> Unit) {
 
     // Estado del buscador
     var searchText by remember { mutableStateOf("") }
@@ -105,7 +105,7 @@ fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit) {
         }
 
         // Barra inferior
-        BottomBar()
+        BottomBar(onRankingClick = onRankingClick)
     }
 }
 
@@ -263,14 +263,14 @@ fun TeamCard(team: Team, onClick: () -> Unit) {
 
 // Barra inferior parecida al diseño
 @Composable
-fun BottomBar() {
+fun BottomBar(onRankingClick: () -> Unit) {
     NavigationBar(
         modifier = Modifier.navigationBarsPadding(),
         containerColor = Color(0xFF27324B)
     ) {
         NavigationBarItem(
             selected = true,
-            onClick = { },
+            onClick = {onRankingClick()},
             icon = {
                 Icon(
                     imageVector = Icons.Default.Star,
@@ -278,9 +278,7 @@ fun BottomBar() {
                     tint = Color.White
                 )
             },
-            label = {
-                Text("Rankings", color = Color.White)
-            }
+            label = { Text("Rankings", color = Color.White) }
         )
 
         NavigationBarItem(

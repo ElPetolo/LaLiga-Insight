@@ -29,16 +29,27 @@ import com.example.laligainsight.iu.TeamsScreen
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.Team
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.laligainsight.iu.StandingsScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+
+enum class MainTab{
+    TEAMS, STANDINGS, COMPARE, PROFILE
+}
 
 class MainActivity : ComponentActivity() {
 
     private var selectedTeam by mutableStateOf<Team?>(null)
     private var teams by mutableStateOf<List<Team>>(emptyList())
     private var selectedPlayer by mutableStateOf<Player?>(null)
+
+    private var selectedTab by mutableStateOf(MainTab.TEAMS)
+
     private var showSplash by mutableStateOf(true)
     private var composeReady by mutableStateOf(false)
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +65,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LaunchedEffect(Unit) {
-                composeReady = true // Compose listo → splash del sistema desaparece
+                composeReady = true // Compose listo -> splash del sistema desaparece
             }
 
             if (showSplash) {
@@ -63,10 +74,11 @@ class MainActivity : ComponentActivity() {
                 when {
                     selectedPlayer != null -> {
                         PlayerDetailScreen(
-                            player = selectedPlayer!!,
+                            player = selectedPlayer!!, // Suponemos que selectedPlayer no es nulo
                             onBackClick = { selectedPlayer = null }
                         )
                     }
+
                     selectedTeam != null -> {
                         TeamDetailScreen(
                             team = selectedTeam!!,
@@ -74,11 +86,35 @@ class MainActivity : ComponentActivity() {
                             onPlayerClick = { player -> selectedPlayer = player }
                         )
                     }
+
                     else -> {
-                        TeamsScreen(
-                            teams = teams,
-                            onTeamClick = { team -> selectedTeam = team }
-                        )
+                        when(selectedTab){
+                            MainTab.TEAMS -> {
+                                TeamsScreen(
+                                    teams = teams,
+                                    onTeamClick = { team -> selectedTeam = team },
+                                    onRankingClick = {
+                                        selectedTab = MainTab.STANDINGS
+                                    }
+                                )
+                            }
+
+                            MainTab.STANDINGS -> {
+                                StandingsScreen(
+                                    onBackClick = {
+                                        selectedTab = MainTab.TEAMS
+                                    }
+                                )
+                            }
+
+                            MainTab.COMPARE -> {
+                                Text("Comparador")
+                            }
+
+                            MainTab.PROFILE -> {
+                                Text("Perfil")
+                            }
+                        }
                     }
                 }
             }
@@ -87,14 +123,21 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             try {
                 val response = RetrofitCliente.api.getTeams()
-                teams = if (response.isSuccessful) response.body()?.teams ?: emptyList()
-                else emptyList()
+                teams = if (response.isSuccessful) {
+                    response.body()?.teams ?: emptyList()
+                } else {
+                  emptyList()
+                }
             } catch (e: Exception) {
                 teams = emptyList()
             }
         }
     }
 }
+
+
+
+
 
 @Composable
 fun SplashScreen() {
@@ -216,7 +259,7 @@ fun SplashScreen() {
         }
 
         Text(
-            text = "by petolo",
+            text = "HÉCTOR CUÉLLAR Y CÉSAR ALONSO",
             color = Color(0x33FFFFFF),
             fontSize = 10.sp,
             letterSpacing = 0.15.em,
