@@ -31,6 +31,8 @@ import com.example.laligainsight.modelo.Team
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.laligainsight.iu.AuthScreen
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
 
@@ -39,6 +41,7 @@ class MainActivity : ComponentActivity() {
     private var selectedPlayer by mutableStateOf<Player?>(null)
     private var showSplash by mutableStateOf(true)
     private var composeReady by mutableStateOf(false)
+    private var isLoggedIn by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,13 +55,31 @@ class MainActivity : ComponentActivity() {
             showSplash = false
         }
 
+        FirebaseAuth.getInstance().currentUser?.reload()
+            ?.addOnCompleteListener { task ->
+                isLoggedIn = if (task.isSuccessful) {
+                    FirebaseAuth.getInstance().currentUser != null
+                } else {
+                    FirebaseAuth.getInstance().signOut()
+                    false
+                }
+            } ?: run {
+            isLoggedIn = false
+        }
+
         setContent {
             LaunchedEffect(Unit) {
-                composeReady = true // Compose listo → splash del sistema desaparece
+                composeReady = true
             }
 
             if (showSplash) {
                 SplashScreen()
+            } else if (!isLoggedIn) {
+                AuthScreen(
+                    onLoginSuccess = {
+                        isLoggedIn = true
+                    }
+                )
             } else {
                 when {
                     selectedPlayer != null -> {
@@ -67,6 +88,7 @@ class MainActivity : ComponentActivity() {
                             onBackClick = { selectedPlayer = null }
                         )
                     }
+
                     selectedTeam != null -> {
                         TeamDetailScreen(
                             team = selectedTeam!!,
@@ -74,6 +96,7 @@ class MainActivity : ComponentActivity() {
                             onPlayerClick = { player -> selectedPlayer = player }
                         )
                     }
+
                     else -> {
                         TeamsScreen(
                             teams = teams,

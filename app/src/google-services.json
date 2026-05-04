@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "956177550052",
+    "project_id": "laliga-players-images",
+    "storage_bucket": "laliga-players-images.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956177550052:android:cfedee9619f75d9481baf1",
+        "android_client_info": {
+          "package_name": "com.example.laligainsight"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956177550052-51v4f2hdt1934307p6f3j8k6hin2qc7o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.laligainsight",
+            "certificate_hash": "b1da9de2998ad5c8795d7678c5942d741d1eab7c"
+          }
+        },
+        {
+          "client_id": "956177550052-cbp90mom4n177tf3b4jdnhou5o336sbg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.laligainsight",
+            "certificate_hash": "b02c289c9c145394e7c423a0726bd9c5504d5b15"
+          }
+        },
+        {
+          "client_id": "956177550052-k4c50l3uifj99f308h7pkqq1b15jfed9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdy1ExCrTEyUuil5PZZEzwjsc1APGj2OQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956177550052-k4c50l3uifj99f308h7pkqq1b15jfed9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
