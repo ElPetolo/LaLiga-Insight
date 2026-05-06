@@ -253,6 +253,9 @@ class MainActivity : ComponentActivity() {
                                     // Nuevo: desde TeamsScreen podemos ir a Rankings.
                                     onRankingClick = {
                                         selectedTab = MainTab.STANDINGS
+                                    },
+                                    onProfileClick = {
+                                        showProfile = true
                                     }
                                 )
                             }
