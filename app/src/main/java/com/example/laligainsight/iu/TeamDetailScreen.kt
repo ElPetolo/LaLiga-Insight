@@ -95,8 +95,15 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF08142E)) // Mismo color de fondo que el home
-            .statusBarsPadding() // Con esto evitamos que junte con la barra de arriba
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF0D1F1A),
+                        Color(0xFF07140F),
+                        Color(0xFF020605)
+                    )
+                )
+            )            .statusBarsPadding() // Con esto evitamos que junte con la barra de arriba
             .padding(20.dp)
             .verticalScroll(rememberScrollState()),
     ) {
@@ -105,8 +112,16 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(brush = Brush.verticalGradient(gradientColors))
-                .padding(horizontal = 20.dp, vertical = 20.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color(0xFF111827),
+                            gradientColors[1].copy(alpha = 0.45f),
+                            gradientColors[2].copy(alpha = 0.70f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(28.dp)
+                )                .padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -190,7 +205,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                 ) {
                     Text(
                         text = tab,
-                        color = if (tab == selectedTab.value) Color.White else Color.Gray,
+                        color = if (tab == selectedTab.value) Color(0xFF1D9E75) else Color(0x99FFFFFF),
                         fontSize = 16.sp,
                         fontWeight = if (selectedTab.value == tab) FontWeight.Bold else FontWeight.Normal
                     )
@@ -202,7 +217,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                             .height(3.dp)
                             .width(60.dp)
                             .background(
-                                if (tab == selectedTab.value) Color.White else Color.Transparent,
+                                if (tab == selectedTab.value) Color(0xFF1D9E75) else Color.Transparent,
                                 shape = RoundedCornerShape(50)
                             )
                     )
@@ -219,7 +234,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E))
+                colors = CardDefaults.cardColors(containerColor = Color(0x141D9E75))
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
@@ -254,7 +269,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E))
+                colors = CardDefaults.cardColors(containerColor = Color(0x141D9E75))
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
@@ -274,7 +289,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                                     .clickable{onPlayerClick(player)},
                                 shape = RoundedCornerShape(16.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFF223058)
+                                    containerColor = Color(0x221D9E75)
                                 )
                            ) {
                                 Row(
@@ -355,7 +370,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E))
+                colors = CardDefaults.cardColors(containerColor = Color(0x141D9E75))
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
@@ -381,7 +396,7 @@ fun StatCard(title: String, value: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF223058))
+        colors = CardDefaults.cardColors(containerColor = Color(0x221D9E75))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -436,7 +451,7 @@ fun StatCard(title: String, value: String, modifier: Modifier = Modifier) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E))
+                colors = CardDefaults.cardColors(containerColor = Color(0x141D9E75))
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(

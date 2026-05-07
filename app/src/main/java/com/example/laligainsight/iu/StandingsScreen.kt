@@ -32,9 +32,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,11 +45,17 @@ import com.example.laligainsight.viewmodel.PlayersViewModel
 import com.example.laligainsight.viewmodel.ScorersViewModel
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.layout.navigationBarsPadding
 
 
 @Composable
-fun StandingsScreen(viewModel: StandingsViewModel = viewModel(), onBackClick: () -> Unit) {
-
+fun StandingsScreen(
+    viewModel: StandingsViewModel = viewModel(),
+    onHomeClick: () -> Unit,
+    onRankingClick: () -> Unit,
+    onCompareClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
     // --- VARIABLES REFERENTES PARA STANDINGS (CLASIFICACIÓN) ---
 
     // Variables para cada tipo de clasificacion (GENERAL, HOME, AWAY)
@@ -93,111 +96,119 @@ fun StandingsScreen(viewModel: StandingsViewModel = viewModel(), onBackClick: ()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(
-                listOf(
-                    Color(0xFF08142E),
-                    Color(0xFF101820),
-                    Color(0xFF16213E)
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF0D1F1A),
+                        Color(0xFF07140F),
+                        Color(0xFF020605)
+                    )
                 )
-            ))
+            )
             .statusBarsPadding()
-            .padding(16.dp)
     ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Volver",
-                    tint = Color.White
-                )
-            }
 
             Text(
                 text = "Clasificación",
                 color = Color.White,
-                fontSize = 26.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Consulta la tabla y los goleadores de LaLiga",
+                color = Color(0x99FFFFFF),
+                fontSize = 14.sp
+            )
 
-        StatsTabs(
-            selectedTab = selectedTab,
-            onTabSelected = { selectedTab = it }
-        )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
+            StatsTabs(
+                selectedTab = selectedTab,
+                onTabSelected = { selectedTab = it }
+            )
 
-        // Cuando esté cargando:
-        when {
-            isLoading -> {
-                CircularProgressIndicator(color = Color.White)
-            }
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Si hay error:
-            error != null -> {
-                Text(
-                    text = error ?: "Error desconocido",
-                    color = Color.Red
-                )
-            }
+            // Cuando esté cargando:
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(color = Color.White)
+                }
 
-            else -> {
+                // Si hay error:
+                error != null -> {
+                    Text(
+                        text = error ?: "Error desconocido",
+                        color = Color.Red
+                    )
+                }
 
-                // Según la pestaña seleccionada...
-                when (selectedTab) {
+                else -> {
+
+                    // Según la pestaña seleccionada...
+                    when (selectedTab) {
 
 
-                    // Clasificación general
-                    "GENERAL" -> {
-                        StandingHeader()
-                        LazyColumn {
-                            items(standings) { team ->
-                                StandingItem(team = team)
+                        // Clasificación general
+                        "GENERAL" -> {
+                            StandingHeader()
+                            LazyColumn {
+                                items(standings) { team ->
+                                    StandingItem(team = team)
+                                }
                             }
                         }
-                    }
 
-                    // Lista de goleadores
-                    "GOLEADORES" -> {
+                        // Lista de goleadores
+                        "GOLEADORES" -> {
 
-                        // Elegir entre diseño cards o diseño de tabla
-                        ScorersViewSelector(
-                            selectedMode = scorersViewMode,
-                            onModeSelected = { scorersViewMode = it }
-                        )
-
-                        // Según el modo elegido, mostramos un diseño u otro
-                        if (scorersViewMode == "CARDS") {
-
-                            ScorersCardsList(
-                                scorers = scorers,
-                                players = firebasePlayers,
-                                isLoading = scorersLoading,
-                                error = scorersError
+                            // Elegir entre diseño cards o diseño de tabla
+                            ScorersViewSelector(
+                                selectedMode = scorersViewMode,
+                                onModeSelected = { scorersViewMode = it }
                             )
-                        } else {
-                            ScorersList(
-                                scorers = scorers,
-                                players = firebasePlayers,
-                                isLoading = scorersLoading,
-                                error = scorersError
-                            )
+
+                            // Según el modo elegido, mostramos un diseño u otro
+                            if (scorersViewMode == "CARDS") {
+
+                                ScorersCardsList(
+                                    scorers = scorers,
+                                    players = firebasePlayers,
+                                    isLoading = scorersLoading,
+                                    error = scorersError
+                                )
+                            } else {
+                                ScorersList(
+                                    scorers = scorers,
+                                    players = firebasePlayers,
+                                    isLoading = scorersLoading,
+                                    error = scorersError
+                                )
+                            }
                         }
-                    }
 
-                    // PENDIENTE POR HACER
-                    "PARTIDOS" -> {
-                        Text("Partidos próximamente", color = Color.White)
+                        // PENDIENTE POR HACER
+                        "PARTIDOS" -> {
+                            Text("Partidos próximamente", color = Color.White)
+                        }
                     }
                 }
             }
         }
+        AppBottomBar(
+            selectedTab = "Rankings",
+            onHomeClick = onHomeClick,
+            onRankingClick = onRankingClick,
+            onCompareClick = onCompareClick,
+            onProfileClick = onProfileClick
+        )
     }
 }
 
