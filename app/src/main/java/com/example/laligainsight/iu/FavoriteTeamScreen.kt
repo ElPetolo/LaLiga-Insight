@@ -20,11 +20,16 @@ import com.example.laligainsight.Auth.UserRepository
 import com.example.laligainsight.modelo.Team
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 @Composable
 fun FavoriteTeamScreen(
     teams: List<Team>,
-    onTeamSelected: () -> Unit
+    onTeamSelected: () -> Unit,
+    onBack: () -> Unit
 ) {
     val repo = remember { UserRepository() }
     val scope = rememberCoroutineScope()
@@ -33,15 +38,35 @@ fun FavoriteTeamScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF060E0B))
-            .padding(16.dp)
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp)
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, bottom = 20.dp)
+        ) {
 
-        Text(
-            text = "Selecciona tu equipo",
-            color = Color.White,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
+            IconButton(
+                onClick = onBack
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = "Selecciona tu equipo",
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 

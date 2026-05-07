@@ -1,5 +1,6 @@
 package com.example.laligainsight.iu
 
+import android.R.id.message
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ fun PrivacySecurityScreen(
 ) {
     val auth = FirebaseAuth.getInstance()
     val email = auth.currentUser?.email ?: "Email no disponible"
+    var message by remember { mutableStateOf<String?>(null) }
 
 
     Column(
@@ -98,16 +100,31 @@ fun PrivacySecurityScreen(
                 Spacer(modifier = Modifier.height(22.dp))
 
                 Button(
-                    onClick = {
-                        auth.currentUser?.email?.let {
-                            auth.sendPasswordResetEmail(it)
-                        }
-                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF1D9E75)
                     ),
-                    shape = RoundedCornerShape(18.dp),
-                    modifier = Modifier.fillMaxWidth()
+
+                    onClick = {
+                        val email = FirebaseAuth.getInstance().currentUser?.email
+
+                        if (email.isNullOrEmpty()) {
+                            message = "No se ha encontrado el correo de la cuenta"
+                            return@Button
+                        }
+
+                        FirebaseAuth.getInstance()
+                            .sendPasswordResetEmail(email)
+                            .addOnSuccessListener {
+                                message = "Se ha enviado un correo para cambiar la contraseña"
+                            }
+                            .addOnFailureListener {
+                                message = "No se pudo enviar el correo"
+                            }
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Lock,
@@ -121,6 +138,14 @@ fun PrivacySecurityScreen(
                         text = "Cambiar contraseña",
                         color = Color.White,
                         fontWeight = FontWeight.Bold
+                    )
+                }
+                message?.let {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = it,
+                        color = Color(0xFF1D9E75),
+                        fontSize = 14.sp
                     )
                 }
             }
