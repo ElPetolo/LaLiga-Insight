@@ -130,6 +130,10 @@ class MainActivity : ComponentActivity() {
                             onTeamSelected = {
                                 showFavoriteTeamScreen = false
                                 showProfile = true
+                            },
+                            onBack = {
+                                showFavoriteTeamScreen = false
+                                showProfile = true
                             }
                         )
                     }

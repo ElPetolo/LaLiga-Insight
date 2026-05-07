@@ -52,8 +52,10 @@ fun UserProfileScreen(
                     )
                 )
             )
+            .statusBarsPadding()
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
+
     )
     {
         Row(

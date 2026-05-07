@@ -54,6 +54,7 @@ fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit, onProfileClick: 
             .fillMaxSize()
             .background(Color(0xFF08142E))
             .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
 
         // Parte superior: buscador y título
