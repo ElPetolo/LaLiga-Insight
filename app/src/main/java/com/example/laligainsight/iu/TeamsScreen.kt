@@ -8,18 +8,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CompareArrows
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -37,61 +30,64 @@ import coil.compose.AsyncImage
 import com.example.laligainsight.modelo.Team
 
 @Composable
-fun TeamsScreen(teams: List<Team>, onTeamClick: (Team) -> Unit, onProfileClick: () -> Unit,  onRankingClick: () -> Unit) {
-
-    // Estado del buscador
+fun TeamsScreen(
+    teams: List<Team>,
+    onTeamClick: (Team) -> Unit,
+    onHomeClick: () -> Unit,
+    onRankingClick: () -> Unit,
+    onCompareClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
     var searchText by remember { mutableStateOf("") }
 
-
-    // Filtramos los equipos según el texto de búsqueda
     val filteredTeams = teams.filter {
         it.name.contains(searchText, ignoreCase = true)
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF08142E))
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF0D1F1A),
+                        Color(0xFF07140F),
+                        Color(0xFF020605)
+                    )
+                )
+            )
             .statusBarsPadding()
-            .navigationBarsPadding()
     ) {
-
-        // Parte superior: buscador y título
         TopSection(
             searchText = searchText,
             onSearchTextChange = { searchText = it }
         )
 
-        // Lista de equipos
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-
-            // Recorremos los equipos filtrados
             items(filteredTeams) { team ->
-
-                // Card de cada equipo
                 TeamCard(
                     team = team,
                     onClick = { onTeamClick(team) }
                 )
             }
 
-            // Espacio extra al final, no queda tan pegado a la barra
             item {
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
 
-        // Barra inferior
-        BottomBar(
-            onProfileClick = onProfileClick,
-            onRankingClick = onRankingClick
+        AppBottomBar(
+            selectedTab = "Home",
+            onHomeClick = onHomeClick,
+            onRankingClick = onRankingClick,
+            onCompareClick = onCompareClick,
+            onProfileClick = onProfileClick
         )
     }
 }
@@ -101,60 +97,62 @@ fun TopSection(
     searchText: String,
     onSearchTextChange: (String) -> Unit
 ) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF27324B))
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(horizontal = 20.dp, vertical = 18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0x141D9E75)
+        ),
+        shape = RoundedCornerShape(28.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
         ) {
-            IconButton(onClick = { }) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Menú",
-                    tint = Color.White
-                )
-            }
+            Text(
+                text = "LaLiga Teams",
+                color = Color.White,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold
+            )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "Consulta equipos, estadios y plantillas",
+                color = Color(0x99FFFFFF),
+                fontSize = 14.sp
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
 
             OutlinedTextField(
                 value = searchText,
                 onValueChange = onSearchTextChange,
                 placeholder = {
-                    Text("Search teams...", color = Color.DarkGray)
+                    Text("Buscar equipo...", color = Color(0x99FFFFFF))
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(30.dp),
+                shape = RoundedCornerShape(22.dp),
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Buscar",
-                        tint = Color.Black
+                        tint = Color(0xFF1D9E75)
                     )
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFFF0F0F0),
-                    unfocusedContainerColor = Color(0xFFF0F0F0),
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
+                    focusedContainerColor = Color(0xFF111827),
+                    unfocusedContainerColor = Color(0x141D9E75),
+                    focusedBorderColor = Color(0xFF1D9E75),
+                    unfocusedBorderColor = Color(0x331D9E75),
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color(0xFF1D9E75)
                 )
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "LaLiga Teams",
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
@@ -168,24 +166,32 @@ fun TeamCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(126.dp)
+            .height(118.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
+            containerColor = Color(0x141D9E75)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = Brush.horizontalGradient(gradientColors))
-                .padding(horizontal = 18.dp, vertical = 16.dp),
+                .background(
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            Color(0xFF111827),
+                            gradientColors[1].copy(alpha = 0.45f),
+                            gradientColors[2].copy(alpha = 0.70f)
+                        )
+                    )
+                )
+                .padding(horizontal = 18.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(82.dp)
+                    .size(74.dp)
                     .clip(CircleShape)
                     .background(Color.White),
                 contentAlignment = Alignment.Center
@@ -193,7 +199,7 @@ fun TeamCard(
                 AsyncImage(
                     model = team.crest,
                     contentDescription = team.name,
-                    modifier = Modifier.size(60.dp),
+                    modifier = Modifier.size(54.dp),
                     contentScale = ContentScale.Fit
                 )
             }
@@ -204,17 +210,19 @@ fun TeamCard(
                 Text(
                     text = team.name,
                     color = Color.White,
-                    fontSize = 24.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    lineHeight = 28.sp
+                    lineHeight = 25.sp,
+                    maxLines = 2
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = team.venue ?: "Estadio no disponible",
-                    color = Color(0xFFE5E5E5),
-                    fontSize = 14.sp
+                    color = Color(0x99FFFFFF),
+                    fontSize = 13.sp,
+                    maxLines = 1
                 )
             }
 
@@ -223,65 +231,10 @@ fun TeamCard(
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = "Ir al detalle",
-                tint = Color.White,
-                modifier = Modifier.size(34.dp)
+                tint = Color(0xFF1D9E75),
+                modifier = Modifier.size(32.dp)
             )
         }
-    }
-}
-
-@Composable
-fun BottomBar(
-    onProfileClick: () -> Unit,
-    onRankingClick: () -> Unit
-) {
-    NavigationBar(
-        modifier = Modifier.navigationBarsPadding(),
-        containerColor = Color(0xFF27324B)
-    ) {
-        NavigationBarItem(
-            selected = true,
-            onClick = {onRankingClick()},
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Rankings",
-                    tint = Color.White
-                )
-            },
-            label = { Text("Rankings", color = Color.White) }
-        )
-
-        NavigationBarItem(
-            selected = true,
-            // todavía no lleva a nada
-            onClick = {},
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.CompareArrows,
-                    contentDescription = "Compare",
-                    tint = Color.White
-                )
-            },
-            label = {
-                Text("Compare", color = Color.White)
-            }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = onProfileClick,
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.PersonOutline,
-                    contentDescription = "Profile",
-                    tint = Color.White
-                )
-            },
-            label = {
-                Text("Profile", color = Color.White)
-            }
-        )
     }
 }
 

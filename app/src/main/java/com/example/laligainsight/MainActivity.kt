@@ -33,7 +33,6 @@ import com.example.laligainsight.iu.TeamsScreen
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.Team
 import com.google.firebase.auth.FirebaseAuth
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.laligainsight.iu.StandingsScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,6 +40,10 @@ import com.example.laligainsight.iu.EditProfileScreen
 import com.example.laligainsight.iu.PrivacySecurityScreen
 import com.example.laligainsight.iu.FriendsScreen
 import com.example.laligainsight.iu.UserProfileScreen
+import com.example.laligainsight.iu.CompareScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.laligainsight.viewmodel.ScorersViewModel
+import androidx.compose.runtime.collectAsState
 
 
 enum class MainTab{
@@ -67,6 +70,8 @@ class MainActivity : ComponentActivity() {
     private var selectedUserId by mutableStateOf<String?>(null)
 
     private var showUserProfileScreen by mutableStateOf(false)
+    private var showCompareScreen by mutableStateOf(false)
+
 
 
 
@@ -97,6 +102,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+
+            val scorersViewModel: ScorersViewModel = viewModel()
+            val scorers by scorersViewModel.scorers.collectAsState()
+
             LaunchedEffect(Unit) {
 
                 composeReady = true // Compose listo -> splash del sistema desaparece
@@ -193,6 +202,35 @@ class MainActivity : ComponentActivity() {
                             onHomeClick = {
                                 showProfile = false
                                 showFavoriteTeamScreen = false
+                                showEditProfileScreen = false
+                                showPrivacySecurityScreen = false
+                                showFriendsScreen = false
+                                selectedUserId = null
+                                selectedTeam = null
+                                selectedPlayer = null
+                                selectedTab = MainTab.TEAMS
+                            },
+                            onRankingClick = {
+                                showProfile = false
+                                showFavoriteTeamScreen = false
+                                showEditProfileScreen = false
+                                showPrivacySecurityScreen = false
+                                showFriendsScreen = false
+                                selectedUserId = null
+                                selectedTeam = null
+                                selectedPlayer = null
+                                selectedTab = MainTab.STANDINGS
+                            },
+                            onCompareClick = {
+                                showProfile = false
+                                showFavoriteTeamScreen = false
+                                showEditProfileScreen = false
+                                showPrivacySecurityScreen = false
+                                showFriendsScreen = false
+                                selectedUserId = null
+                                selectedTeam = null
+                                selectedPlayer = null
+                                selectedTab = MainTab.COMPARE
                             },
                             onSelectTeamClick = {
                                 showFavoriteTeamScreen = true
@@ -209,6 +247,9 @@ class MainActivity : ComponentActivity() {
                             onFriendsClick = {
                                 showFriendsScreen = true
                                 showProfile = false
+                            },
+                            onProfileClick = {
+                                showProfile = true
                             },
                             onLogout = {
                                 FirebaseAuth.getInstance().signOut()
@@ -247,18 +288,20 @@ class MainActivity : ComponentActivity() {
                             MainTab.TEAMS -> {
                                 TeamsScreen(
                                     teams = teams,
-
-                                    // Al pulsar un equipo, se abre su detalle.
-                                    // Esto ya estaba funcionando y no lo tocamos.
                                     onTeamClick = { team ->
                                         selectedTeam = team
                                     },
-
-                                    // Nuevo: desde TeamsScreen podemos ir a Rankings.
+                                    onHomeClick = {
+                                        selectedTab = MainTab.TEAMS
+                                    },
                                     onRankingClick = {
                                         selectedTab = MainTab.STANDINGS
                                     },
+                                    onCompareClick = {
+                                        selectedTab = MainTab.COMPARE
+                                    },
                                     onProfileClick = {
+                                        selectedTab = MainTab.PROFILE
                                         showProfile = true
                                     }
                                 )
@@ -267,21 +310,45 @@ class MainActivity : ComponentActivity() {
                             // Pantalla nueva de clasificación/goleadores
                             MainTab.STANDINGS -> {
                                 StandingsScreen(
-                                    // Volvemos a equipos sin romper la navegación general
-                                    onBackClick = {
+                                    onHomeClick = {
                                         selectedTab = MainTab.TEAMS
+                                    },
+                                    onRankingClick = {
+                                        selectedTab = MainTab.STANDINGS
+                                    },
+                                    onCompareClick = {
+                                        selectedTab = MainTab.COMPARE
+                                    },
+                                    onProfileClick = {
+                                        selectedTab = MainTab.PROFILE
+                                        showProfile = true
                                     }
                                 )
                             }
 
                             // Lo dejamos provisional para no romper el tab
                             MainTab.COMPARE -> {
-                                Text("Comparador")
+                                CompareScreen(
+                                    scorers = scorers,
+                                    onHomeClick = {
+                                        selectedTab = MainTab.TEAMS
+                                    },
+                                    onRankingClick = {
+                                        selectedTab = MainTab.STANDINGS
+                                    },
+                                    onCompareClick = {
+                                        selectedTab = MainTab.COMPARE
+                                    },
+                                    onProfileClick = {
+                                        selectedTab = MainTab.PROFILE
+                                        showProfile = true
+                                    }
+                                )
                             }
 
                             // Lo dejamos provisional para no tocar aún el perfil/login de Héctor
                             MainTab.PROFILE -> {
-                                Text("Perfil")
+                                showProfile = true
                             }
                         }
                     }

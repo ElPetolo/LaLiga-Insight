@@ -7,11 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CompareArrows
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +34,10 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit,
     onPrivacySecurityClick: () -> Unit,
     onFriendsClick: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onRankingClick: () -> Unit,
+    onCompareClick: () -> Unit,
+    onProfileClick: () -> Unit
 ) {
     val repo = remember { UserRepository() }
 
@@ -68,7 +66,6 @@ fun ProfileScreen(
                 )
             )
             .statusBarsPadding()
-            .navigationBarsPadding()
     ) {
         Column(
             modifier = Modifier
@@ -220,8 +217,12 @@ fun ProfileScreen(
             }
         }
 
-        ProfileBottomBar(
-            onHomeClick = onHomeClick
+        AppBottomBar(
+            selectedTab = "Profile",
+            onHomeClick = onHomeClick,
+            onRankingClick = onRankingClick,
+            onCompareClick = onCompareClick,
+            onProfileClick = onProfileClick
         )
     }
 }
@@ -273,99 +274,6 @@ fun ProfileButton(
             text = text,
             color = Color(0xFF1D9E75),
             fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-fun ProfileItem(
-    title: String,
-    value: String
-) {
-    Column {
-        Text(
-            text = title,
-            color = Color(0x99FFFFFF),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = value,
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-@Composable
-fun ProfileBottomBar(
-    onHomeClick: () -> Unit
-) {
-    NavigationBar(
-        containerColor = Color(0xFF07140F)
-    ) {
-        NavigationBarItem(
-            selected = false,
-            onClick = onHomeClick,
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = Color(0x99FFFFFF)
-                )
-            },
-            label = {
-                Text("Home", color = Color(0x99FFFFFF))
-            }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Rankings",
-                    tint = Color(0x99FFFFFF)
-                )
-            },
-            label = {
-                Text("Rankings", color = Color(0x99FFFFFF))
-            }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.CompareArrows,
-                    contentDescription = "Compare",
-                    tint = Color(0x99FFFFFF)
-                )
-            },
-            label = {
-                Text("Compare", color = Color(0x99FFFFFF))
-            }
-        )
-
-        NavigationBarItem(
-            selected = true,
-            onClick = { },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
-                    tint = Color(0xFF1D9E75)
-                )
-            },
-            label = {
-                Text("Profile", color = Color(0xFF1D9E75))
-            }
         )
     }
 }
