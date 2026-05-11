@@ -49,6 +49,7 @@ fun FavoriteTeamScreen(
             columns = GridCells.Fixed(3),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
+
         ) {
             items(teams) { team ->
 

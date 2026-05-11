@@ -33,7 +33,6 @@ import com.example.laligainsight.iu.TeamsScreen
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.Team
 import com.google.firebase.auth.FirebaseAuth
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.laligainsight.iu.StandingsScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -253,7 +252,11 @@ class MainActivity : ComponentActivity() {
                                     // Nuevo: desde TeamsScreen podemos ir a Rankings.
                                     onRankingClick = {
                                         selectedTab = MainTab.STANDINGS
-                                    }
+                                    },
+
+                                    onProfileClick = {
+                                        showProfile = true
+                                    },
                                 )
                             }
 

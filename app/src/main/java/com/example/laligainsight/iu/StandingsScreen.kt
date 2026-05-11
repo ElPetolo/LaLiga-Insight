@@ -1,5 +1,7 @@
 package com.example.laligainsight.iu
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -47,9 +49,17 @@ import com.example.laligainsight.modelo.StandingTeam
 import com.example.laligainsight.viewmodel.PlayersViewModel
 import com.example.laligainsight.viewmodel.ScorersViewModel
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
+import com.example.laligainsight.api.RetrofitCliente
+import com.example.laligainsight.modelo.Match
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StandingsScreen(viewModel: StandingsViewModel = viewModel(), onBackClick: () -> Unit) {
 
@@ -84,9 +94,37 @@ fun StandingsScreen(viewModel: StandingsViewModel = viewModel(), onBackClick: ()
     // Estado de error goleadores
     val scorersError by scorersViewModel.error.collectAsState()
 
+    // Variables para mostrar los partidos por jornada
+    var matches by remember{ mutableStateOf<List<Match>>(emptyList())}
+
+    // Variable necesaria para poder filtrar por jornada
+    var selectedMatchday by remember { mutableStateOf(1) }
+
     // --- VARIABLES PARA EL VIEWMODEL DE JUGADORES Y FIREBASE ---
     val playersViewModel: PlayersViewModel = viewModel()
     val firebasePlayers by playersViewModel.players.collectAsState()
+
+
+    // Cuando entre en la pantalla, cargamos todos los partidos de LaLiga
+
+    //  Unit == se ejecuta una vez (unica) cuando entra el composable
+    LaunchedEffect(Unit) {
+
+        try {
+            // Llamamos a la API para obtener todos los partidos de LaLiga
+            val response = RetrofitCliente.api.getLaLigaMatches()
+
+            // Guardamos los partidos que hemos recibido de la API
+            matches = response.matches
+
+            // Prueba para comprobar
+            println("PARTIDOS DE LALIGA RECIBIDOS: ${matches.size}")
+
+        } catch (e: Exception) {
+            println("ERROR CARGANDO PARTIDOS DE LALIGA: ${e.message}")
+        }
+
+    }
 
 
     // Aquí iría el código para mostrar la clasificación
@@ -193,7 +231,89 @@ fun StandingsScreen(viewModel: StandingsViewModel = viewModel(), onBackClick: ()
 
                     // PENDIENTE POR HACER
                     "PARTIDOS" -> {
-                        Text("Partidos próximamente", color = Color.White)
+
+                        // Filtramos los partidos por jornada (1-38)
+                        val partidosJornada = matches.filter { it.matchday == selectedMatchday }
+
+                        // Estado para el despegable de elección de jornada (abierto o cerrado)
+                        var extendido by remember { mutableStateOf(false) }
+
+                        // Creamos un despegable para que el usuario pueda ver las jornadas
+                        Box {
+
+                            // Boton para abrir el despegable
+                            Row(
+                                modifier = Modifier
+                                    .background(
+                                        Color(0xFFE1062C),
+                                        RoundedCornerShape(20.dp)
+                                    ) //Elegimos un fondo rojn
+                                    .clickable {
+                                        extendido = true
+                                    } // Al pulsar se abre el despegale
+                                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                // Texto con la jornada que seleccionamos
+                                Text(
+                                    text = "JORNADA ${selectedMatchday}",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .background(Color(0xFFE1062C), RoundedCornerShape(20.dp))
+                                        .clickable { extendido = true }
+                                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                                )
+
+                                // Icono de flecha hacia abajo para dar impresion de lista
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Abrir selector",
+                                    tint = Color.White
+                                )
+                            }
+
+                            // Menú despegable --> DropDownMenu
+                            DropdownMenu(
+                                expanded = extendido, // Se muestra cuando extendido = true
+                                onDismissRequest = { extendido = false } // Al cerrar el menu, extendido vuelve a false
+                            ) {
+
+                                // Recorremos todas las jornadas
+                                (1..38).forEach() { jornada ->
+
+                                    // Boton para cada jornada
+                                    DropdownMenuItem(
+                                        text = {
+                                          // Texto de cada opción
+                                            Text(text = "JORNADA $jornada")
+                                        },
+
+                                        // Al pulsar una jornada...
+                                        onClick = {
+                                            selectedMatchday = jornada //guardado de jornada
+                                            extendido = false // se cierra el menú
+                                        }
+                                    )
+
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+
+
+
+                        // Mostramos la lista de partidos de esa jornada
+                        LazyColumn {
+                            items(partidosJornada) { match ->
+                                PartidoRankingItem(
+                                   match = match
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -207,9 +327,9 @@ fun StandingsScreen(viewModel: StandingsViewModel = viewModel(), onBackClick: ()
 fun StandingItem(team: StandingTeam) {
 
     val accentColor = when {
-        team.position in 1..4 -> Color(0xFF1D75D8) // Champions
-        team.position == 5 || team.team.name.contains("Real Sociedad", true) -> Color(0xFFFF6A00) // Europa League
-        team.position == 6 -> Color(0xFF2ECC71) // Conference
+        team.position in 1..5 -> Color(0xFF1D75D8) // Champions
+        team.position == 6 || team.team.name.contains("Real Sociedad", true) -> Color(0xFFFF6A00) // Europa League
+        team.position == 7 -> Color(0xFF2ECC71) // Conference
         team.position >= 18 -> Color(0xFFE53935) // Descenso
         else -> Color(0xFF30415F)
     }
@@ -628,4 +748,17 @@ fun ScorersViewSelector(selectedMode: String, onModeSelected: (String) -> Unit) 
 
         }
     }
+}
+
+
+// Funcion composable para mostrar item de partidos sin el badge del resultado
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun PartidoRankingItem(match: Match) {
+    PartidoItem(
+        match = match,
+        teamId = match.homeTeam.id,
+        isFinished = match.status == "FINISHED",
+        showBadge = false
+    )
 }
