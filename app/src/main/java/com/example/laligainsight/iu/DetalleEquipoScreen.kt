@@ -169,10 +169,8 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF08142E)) // Mismo color de fondo que el home
-            .statusBarsPadding() // Con esto evitamos que junte con la barra de arriba
-            .padding(20.dp)
-            .verticalScroll(rememberScrollState()),
+            .background(AppColors.MainBackgroundBrush)
+            .verticalScroll(rememberScrollState())
     ) {
 
         // ======================= CABECERA VISUAL DEL EQUIPO ===============================
@@ -181,8 +179,11 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(brush = Brush.verticalGradient(gradientColors))
-                .padding(horizontal = 20.dp, vertical = 20.dp)
+                .background(
+                    brush = Brush.verticalGradient(gradientColors)
+                )
+                .statusBarsPadding()
+                .padding(horizontal = 24.dp, vertical = 34.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -244,33 +245,30 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                     color = Color(0xFFE5E5E5),
                     fontSize = 16.sp
                 )
+                Spacer(modifier = Modifier.height(18.dp))
+
+                RatingStars(
+                    summary = ratingSummary,
+                    onRatingSelected = { rating ->
+                        scope.launch {
+                            ratingRepository.rateEntity(
+                                entityType = "team",
+                                entityId = team.id.toString(),
+                                rating = rating
+                            )
+
+                            ratingSummary = ratingRepository.getRatingSummary(
+                                entityType = "team",
+                                entityId = team.id.toString()
+                            )
+                        }
+                    }
+                )
             }
         }
 
         // ===================== VALORACIONES ==========================
 
-        // Componenente para mostrar las estrellas del equipo
-        RatingStars(
-            summary = ratingSummary, // datos: media de votos y número de votos
-
-            onRatingSelected = { rating -> // ejecucion cuando el usuario pulsa una estrella
-                scope.launch {
-
-                    // Guardado de la valoración en Firebase
-                    ratingRepository.rateEntity(
-                        entityType = "team",
-                        entityId = team.id.toString(),
-                        rating = rating
-                    )
-
-                    // Pedimos de nuevo la media actualizada
-                    ratingSummary = ratingRepository.getRatingSummary(
-                        entityType = "team",
-                        entityId = team.id.toString()
-                    )
-                }
-            }
-        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -278,16 +276,15 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             listOf("Resumen", "Plantilla", "Partidos").forEach { tab ->
                 // Cada pestaña se representa con texto + línea inferior
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
+                        .weight(1f)
                         .clickable { selectedTab.value = tab }
-                        .padding(vertical = 12.dp)
+                        .padding(vertical = 16.dp)
                 ) {
                     Text(
                         text = tab,
@@ -301,9 +298,10 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                     Box(
                         modifier = Modifier
                             .height(3.dp)
-                            .width(60.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp)
                             .background(
-                                if (tab == selectedTab.value) Color.White else Color.Transparent,
+                                if (tab == selectedTab.value) AppColors.AccentGreen else Color.Transparent,
                                 shape = RoundedCornerShape(50)
                             )
                     )
@@ -317,9 +315,11 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
         if (selectedTab.value == "Resumen") {
 
             Card(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E))
+                colors = CardDefaults.cardColors(containerColor = AppColors.CardSoftStrong)
             ) {
 
                 Column(
@@ -352,7 +352,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E))
+                colors = CardDefaults.cardColors(containerColor = AppColors.CardSoftStrong)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
@@ -372,7 +372,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
                                     .clickable { onPlayerClick(player) },
                                 shape = RoundedCornerShape(16.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFF223058)
+                                    containerColor = AppColors.ButtonSecondary
                                 )
                             ) {
                                 Row(
@@ -449,85 +449,60 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
         // ======= Si la pestaña seleccionada es "Partidos", mostramos contenido provisional =======
         if (selectedTab.value == "Partidos") {
 
-            // Estado para la pestaña seleccionada
             var selectedMatchTab by remember { mutableStateOf("Resultados") }
 
-            // ==== Variables para dividir entre resultados y próximos partidos  ====
             val resultados = matches
                 .filter { it.status == "FINISHED" }
-                .reversed() // Con esto, invertimos la lista
-                // Salen primero los últimos partidos jugados
+                .reversed()
 
             val proximos = matches.filter {
                 it.status == "SCHEDULED" || it.status == "TIMED"
             }
 
-
-            // El usuario puede elegir entre consultar los próximos partidos o resultados
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
             ) {
-                BotonPartidos(
-                    text = "RESULTADOS",
-                    selected = selectedMatchTab == "Resultados",
-                    modifier = Modifier.weight(1f)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    selectedMatchTab = "Resultados"
-                }
+                    BotonPartidos(
+                        text = "RESULTADOS",
+                        selected = selectedMatchTab == "Resultados",
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        selectedMatchTab = "Resultados"
+                    }
 
-                BotonPartidos(
-                    text = "PRÓXIMOS",
-                    selected = selectedMatchTab == "Próximos",
-                    modifier = Modifier.weight(1f)
-                ) {
-                    selectedMatchTab = "Próximos"
+                    BotonPartidos(
+                        text = "PRÓXIMOS",
+                        selected = selectedMatchTab == "Próximos",
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        selectedMatchTab = "Próximos"
+                    }
                 }
-            }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    val listaPartidos = if (selectedMatchTab == "Resultados") resultados else proximos
 
-            // ============ MUESTREO DE PARTIDOS ==========================0
-                if (selectedMatchTab == "Resultados") {
-
-                    // Column donde mostramos la lista de resultados
-                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                        // Recorremos los partidos finalizados
-                        resultados.forEach { match ->
-
-                            // Pintamos cada partido usando la funcion composable PartidoItem
-                            PartidoItem(
-                                match = match,
-                                teamId = team.id,
-                                isFinished = true
-                            )
-                        }
-                    }
-
-                } else {
-
-
-                    // Cuando el usuario pulse PRÓXIMOS dentro de la pestaña Partidos
-                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
-
-                        // Recorremos los partidos pendientes
-                        /* No quedarán muchos ya que estamos en mayo... */
-                        proximos.forEach { match ->
-
-                            // Al ser proximo, no hay resultado todavía
-                            // Pintamos el partido sin marcador
-                            PartidoItem(
-                                match = match,
-                                teamId = team.id,
-                                isFinished = false // Gracias a esto indicamos que es próximo
-                            )
-                        }
+                    listaPartidos.forEach { match ->
+                        PartidoItem(
+                            match = match,
+                            teamId = team.id,
+                            isFinished = selectedMatchTab == "Resultados"
+                        )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
     }
 }
@@ -631,15 +606,7 @@ fun PlayerDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
@@ -662,7 +629,7 @@ fun PlayerDetailScreen(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0x141D9E75)
+                containerColor = AppColors.CardSoftStrong
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
@@ -684,7 +651,7 @@ fun PlayerDetailScreen(
                 // Posicion
                 Text(
                     text = extraInfo.position,
-                    color = Color(0xFF1D9E75),
+                    color = AppColors.AccentGreen,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -911,7 +878,7 @@ fun BotonPartidos(
 
         // Color en función de si esta seleccionado o no
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) Color(0xFF4A90E2) else Color(0xFF223058))
+            containerColor = if (selected) AppColors.AccentGreen else AppColors.ButtonSecondary)
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
