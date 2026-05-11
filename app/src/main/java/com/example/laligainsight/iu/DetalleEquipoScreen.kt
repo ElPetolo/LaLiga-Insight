@@ -612,7 +612,7 @@ fun PlayerDetailScreen(
             .padding(20.dp)
     ) {
 
-
+//cambio push
         // Incluimos botón para poder volver hacia atrás
         IconButton(onClick = onBackClick) {
             Icon(
