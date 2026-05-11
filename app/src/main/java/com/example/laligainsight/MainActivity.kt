@@ -1,8 +1,10 @@
 package com.example.laligainsight
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -78,6 +80,7 @@ class MainActivity : ComponentActivity() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -331,13 +334,21 @@ class MainActivity : ComponentActivity() {
                                     onRankingClick = {
                                         selectedTab = MainTab.STANDINGS
                                     },
+
+                                    // Navegamos a la pestaña de comparación
                                     onCompareClick = {
                                         selectedTab = MainTab.COMPARE
                                     },
+
+                                    // Navegamos a la pantalla de perfil
                                     onProfileClick = {
                                         showProfile = true
                                     },
+
+                                    // Conteo (numero) de notificaciones pendientes
                                     notificationCount = notificationCount,
+
+                                    // Abrimos la pantalla de notificaciones
                                     onNotificationsClick = {
                                         showNotificationsScreen = true
                                     }
