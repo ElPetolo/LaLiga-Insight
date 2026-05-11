@@ -45,15 +45,7 @@ fun NotificationsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .padding(24.dp)
     ) {
@@ -84,7 +76,7 @@ fun NotificationsScreen(
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = it,
-                color = Color(0xFF1D9E75),
+                color = AppColors.AccentGreen,
                 fontSize = 14.sp
             )
         }
@@ -95,7 +87,7 @@ fun NotificationsScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0x141D9E75)
+                    containerColor = AppColors.CardSoft
                 ),
                 shape = RoundedCornerShape(24.dp)
             ) {
@@ -114,7 +106,7 @@ fun NotificationsScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0x141D9E75)
+                            containerColor = AppColors.CardSoft
                         ),
                         shape = RoundedCornerShape(22.dp)
                     ) {
@@ -157,7 +149,7 @@ fun NotificationsScreen(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Aceptar",
-                                    tint = Color(0xFF1D9E75)
+                                    tint = AppColors.AccentGreen
                                 )
                             }
 

@@ -31,15 +31,7 @@ fun PrivacySecurityScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .padding(24.dp)
     ) {
@@ -64,7 +56,7 @@ fun PrivacySecurityScreen(
 
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = Color(0x141D9E75)
+                containerColor = AppColors.CardSoft
             ),
             shape = RoundedCornerShape(24.dp),
             modifier = Modifier.fillMaxWidth()
@@ -76,7 +68,7 @@ fun PrivacySecurityScreen(
                     Icon(
                         imageVector = Icons.Default.Mail,
                         contentDescription = null,
-                        tint = Color(0xFF1D9E75)
+                        tint = AppColors.AccentGreen
                     )
 
                     Spacer(modifier = Modifier.width(12.dp))
@@ -105,7 +97,7 @@ fun PrivacySecurityScreen(
                         .height(54.dp),
 
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF1D9E75)
+                        containerColor = AppColors.AccentGreen
                     ),
 
                     onClick = {
@@ -144,7 +136,7 @@ fun PrivacySecurityScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = it,
-                        color = Color(0xFF1D9E75),
+                        color = AppColors.AccentGreen,
                         fontSize = 14.sp
                     )
                 }

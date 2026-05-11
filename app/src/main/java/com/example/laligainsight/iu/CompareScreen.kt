@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CompareArrows
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,33 +41,22 @@ fun CompareScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
+
+        ScreenHeader(
+            title = "Comparar jugadores",
+            subtitle = "Analiza goles, asistencias y rendimiento",
+            badge = "Comparador",
+            icon = Icons.Default.CompareArrows
+        )
         Column(
-
             modifier = Modifier
-
                 .weight(1f)
-
                 .verticalScroll(rememberScrollState())
-
                 .padding(24.dp)
-
         ){
-            Spacer(modifier = Modifier.height(12.dp))
-
-            CompareHeader()
-
-            Spacer(modifier = Modifier.height(28.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -183,39 +173,6 @@ fun CompareScreen(
         )
     }
 }
-
-@Composable
-fun CompareHeader() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
-        ),
-        shape = RoundedCornerShape(28.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 26.dp, horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Comparar jugadores",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = "Compara goles, asistencias y rendimiento",
-                color = Color(0x99FFFFFF),
-                fontSize = 14.sp
-            )
-        }
-    }
-}
 @Composable
 fun PlayerSelector(
     title: String,
@@ -239,7 +196,7 @@ fun PlayerSelector(
         Button(
             onClick = { expanded = true },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0x141D9E75)
+                containerColor = AppColors.CardSoftStrong
             ),
             shape = RoundedCornerShape(18.dp),
             modifier = Modifier.fillMaxWidth()
@@ -291,7 +248,7 @@ fun PlayerCompareCard(
     Card(
         modifier = modifier.height(190.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
+            containerColor = AppColors.CardSoftStrong
         ),
         shape = RoundedCornerShape(24.dp)
     ) {
@@ -325,7 +282,7 @@ fun PlayerCompareCard(
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
-                        tint = Color(0xFF1D9E75),
+                        tint = AppColors.AccentGreen,
                         modifier = Modifier.size(42.dp)
                     )
                 }
@@ -373,15 +330,15 @@ fun CompareStatRow(
         0.5f
     }
 
-    val color1 = if (number1 >= number2) Color(0xFF1D9E75) else Color.White
-    val color2 = if (number2 >= number1) Color(0xFF1D9E75) else Color.White
+    val color1 = if (number1 >= number2) AppColors.AccentGreen else Color.White
+    val color2 = if (number2 >= number1) AppColors.AccentGreen else Color.White
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 14.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
+            containerColor = AppColors.CardSoftStrong
         ),
         shape = RoundedCornerShape(22.dp)
     ) {
@@ -435,7 +392,7 @@ fun CompareStatRow(
                         .fillMaxHeight()
                         .weight(leftWeight)
                         .background(
-                            if (number1 >= number2) Color(0xFF1D9E75)
+                            if (number1 >= number2) AppColors.AccentGreen
                             else Color(0x55FFFFFF)
                         )
                 )
@@ -445,7 +402,7 @@ fun CompareStatRow(
                         .fillMaxHeight()
                         .weight(rightWeight)
                         .background(
-                            if (number2 >= number1) Color(0xFF1D9E75)
+                            if (number2 >= number1) AppColors.AccentGreen
                             else Color(0x55FFFFFF)
                         )
                 )

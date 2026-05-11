@@ -46,6 +46,7 @@ import com.example.laligainsight.viewmodel.ScorersViewModel
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material.icons.filled.EmojiEvents
 
 
 @Composable
@@ -96,37 +97,22 @@ fun StandingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
+        ScreenHeader(
+            title = "Clasificación",
+            subtitle = "Tabla, goleadores y datos de LaLiga",
+            badge = "Rankings",
+            icon = Icons.Default.EmojiEvents
+        )
+
         Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-
-            Text(
-                text = "Clasificación",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Text(
-                text = "Consulta la tabla y los goleadores de LaLiga",
-                color = Color(0x99FFFFFF),
-                fontSize = 14.sp
-            )
-
             Spacer(modifier = Modifier.height(8.dp))
 
             StatsTabs(
@@ -329,7 +315,7 @@ fun StatsTabs(selectedTab: String, onTabSelected: (String) -> Unit) {
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .background(
-                        color = if (selected) Color(0xFFE1062C) else Color(0xFF1B2440),
+                        color = if (selected) AppColors.AccentGreen else AppColors.CardDark,
                         shape = RoundedCornerShape(20.dp)
                     )
                 // Al pulsar una pestaña, cambiamos la seccion seleccionada
@@ -630,7 +616,7 @@ fun ScorersViewSelector(selectedMode: String, onModeSelected: (String) -> Unit) 
             modifier = Modifier
                 .padding(end = 8.dp)
                 .background(
-                    color = if (selected) Color(0xFFE1062C) else Color(0xFF1B2440),
+                    color = if (selected) AppColors.AccentGreen else AppColors.CardDark,
                     shape = RoundedCornerShape(20.dp)
                 )
                 .clickable { onModeSelected(mode) }

@@ -98,15 +98,7 @@ fun TeamDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
@@ -193,9 +185,9 @@ fun TeamDetailHeader(
                 .background(
                     brush = Brush.verticalGradient(
                         listOf(
-                            Color(0xFF111827),
-                            gradientColors[1].copy(alpha = 0.42f),
-                            gradientColors[2].copy(alpha = 0.72f)
+                            AppColors.CardDark,
+                            gradientColors[1].copy(alpha = 0.28f),
+                            gradientColors[2].copy(alpha = 0.45f)
                         )
                     )
                 )
@@ -285,7 +277,7 @@ fun TeamTabs(
             ) {
                 Text(
                     text = tab,
-                    color = if (selected) Color(0xFF1D9E75) else Color(0x99FFFFFF),
+                    color = if (selected) AppColors.AccentGreen else Color(0x99FFFFFF),
                     fontSize = 16.sp,
                     fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
                 )
@@ -297,7 +289,7 @@ fun TeamTabs(
                         .height(4.dp)
                         .width(62.dp)
                         .background(
-                            color = if (selected) Color(0xFF1D9E75) else Color.Transparent,
+                            color = if (selected) AppColors.AccentGreen else Color.Transparent,
                             shape = RoundedCornerShape(50.dp)
                         )
                 )
@@ -378,7 +370,7 @@ fun GlassSectionCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
+            containerColor = AppColors.CardSoftStrong
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -411,7 +403,7 @@ fun PlayerSquadCard(
             .clickable { onClick() },
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x221D9E75)
+            containerColor = Color(0x443A5EA8)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -440,7 +432,7 @@ fun PlayerSquadCard(
                 } else {
                     Text(
                         text = player.name.take(1).uppercase(),
-                        color = Color(0xFF111827),
+                        color = AppColors.CardDark,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -471,7 +463,7 @@ fun PlayerSquadCard(
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = "Ver jugador",
-                tint = Color(0xFF1D9E75),
+                tint = AppColors.AccentGreen,
                 modifier = Modifier.size(28.dp)
             )
         }
@@ -488,7 +480,7 @@ fun StatCard(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x221D9E75)
+            containerColor = Color(0x443A5EA8)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -497,7 +489,7 @@ fun StatCard(
         ) {
             Text(
                 text = value,
-                color = Color(0xFF1D9E75),
+                color = AppColors.AccentGreen,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -550,15 +542,7 @@ fun PlayerDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
@@ -577,7 +561,7 @@ fun PlayerDetailScreen(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0x141D9E75)
+                containerColor = AppColors.CardSoft
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
@@ -595,7 +579,7 @@ fun PlayerDetailScreen(
 
                 Text(
                     text = extraInfo.position,
-                    color = Color(0xFF1D9E75),
+                    color = AppColors.AccentGreen,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )

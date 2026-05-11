@@ -23,8 +23,7 @@ fun AppBottomBar(
     onProfileClick: () -> Unit
 ) {
     NavigationBar(
-        containerColor = Color(0xFF07140F),
-        windowInsets = WindowInsets(0.dp)
+        containerColor = AppColors.BottomBar
     ) {
         NavigationBarItem(
             selected = selectedTab == "Home",
@@ -33,13 +32,13 @@ fun AppBottomBar(
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Home",
-                    tint = if (selectedTab == "Home") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    tint = if (selectedTab == "Home") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             },
             label = {
                 Text(
                     text = "Home",
-                    color = if (selectedTab == "Home") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    color = if (selectedTab == "Home") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             }
         )
@@ -51,13 +50,13 @@ fun AppBottomBar(
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Rankings",
-                    tint = if (selectedTab == "Rankings") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    tint = if (selectedTab == "Rankings") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             },
             label = {
                 Text(
                     text = "Rankings",
-                    color = if (selectedTab == "Rankings") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    color = if (selectedTab == "Rankings") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             }
         )
@@ -69,13 +68,13 @@ fun AppBottomBar(
                 Icon(
                     imageVector = Icons.Default.CompareArrows,
                     contentDescription = "Compare",
-                    tint = if (selectedTab == "Compare") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    tint = if (selectedTab == "Compare") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             },
             label = {
                 Text(
                     text = "Compare",
-                    color = if (selectedTab == "Compare") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    color = if (selectedTab == "Compare") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             }
         )
@@ -87,13 +86,13 @@ fun AppBottomBar(
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Profile",
-                    tint = if (selectedTab == "Profile") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    tint = if (selectedTab == "Profile") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             },
             label = {
                 Text(
                     text = "Profile",
-                    color = if (selectedTab == "Profile") Color(0xFF1D9E75) else Color(0x99FFFFFF)
+                    color = if (selectedTab == "Profile") AppColors.AccentGreen else AppColors.TextSecondary
                 )
             }
         )

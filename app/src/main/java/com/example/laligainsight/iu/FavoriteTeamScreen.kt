@@ -37,7 +37,7 @@ fun FavoriteTeamScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF060E0B))
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .padding(horizontal = 16.dp)
     ) {
