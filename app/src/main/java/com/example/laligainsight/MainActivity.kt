@@ -44,6 +44,7 @@ import com.example.laligainsight.iu.CompareScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.laligainsight.viewmodel.ScorersViewModel
 import androidx.compose.runtime.collectAsState
+import com.example.laligainsight.iu.NotificationsScreen
 
 
 enum class MainTab{
@@ -71,6 +72,8 @@ class MainActivity : ComponentActivity() {
 
     private var showUserProfileScreen by mutableStateOf(false)
     private var showCompareScreen by mutableStateOf(false)
+    private var showNotificationsScreen by mutableStateOf(false)
+    private var notificationCount by mutableStateOf(0)
 
 
 
@@ -105,6 +108,27 @@ class MainActivity : ComponentActivity() {
 
             val scorersViewModel: ScorersViewModel = viewModel()
             val scorers by scorersViewModel.scorers.collectAsState()
+
+            DisposableEffect(isLoggedIn) {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+                if (isLoggedIn && uid != null) {
+                    val listener = com.google.firebase.firestore.FirebaseFirestore
+                        .getInstance()
+                        .collection("users")
+                        .document(uid)
+                        .addSnapshotListener { snapshot, _ ->
+                            val requests = snapshot?.get("receivedRequests") as? List<*>
+                            notificationCount = requests?.size ?: 0
+                        }
+
+                    onDispose {
+                        listener.remove()
+                    }
+                } else {
+                    onDispose { }
+                }
+            }
 
             LaunchedEffect(Unit) {
 
@@ -192,6 +216,15 @@ class MainActivity : ComponentActivity() {
                             onUserClick = { userId ->
                                 selectedUserId = userId
                                 showFriendsScreen = false
+                            }
+                        )
+                    }
+
+                    showNotificationsScreen -> {
+                        NotificationsScreen(
+                            onBack = {
+                                showNotificationsScreen = false
+                                selectedTab = MainTab.TEAMS
                             }
                         )
                     }
@@ -286,6 +319,7 @@ class MainActivity : ComponentActivity() {
 
                             // Pantalla principal de equipos
                             MainTab.TEAMS -> {
+
                                 TeamsScreen(
                                     teams = teams,
                                     onTeamClick = { team ->
@@ -301,8 +335,11 @@ class MainActivity : ComponentActivity() {
                                         selectedTab = MainTab.COMPARE
                                     },
                                     onProfileClick = {
-                                        selectedTab = MainTab.PROFILE
                                         showProfile = true
+                                    },
+                                    notificationCount = notificationCount,
+                                    onNotificationsClick = {
+                                        showNotificationsScreen = true
                                     }
                                 )
                             }

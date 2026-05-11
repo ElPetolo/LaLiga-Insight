@@ -8,11 +8,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -36,7 +38,9 @@ fun TeamsScreen(
     onHomeClick: () -> Unit,
     onRankingClick: () -> Unit,
     onCompareClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    notificationCount: Int,
+    onNotificationsClick: () -> Unit,
 ) {
     var searchText by remember { mutableStateOf("") }
 
@@ -60,7 +64,9 @@ fun TeamsScreen(
     ) {
         TopSection(
             searchText = searchText,
-            onSearchTextChange = { searchText = it }
+            onSearchTextChange = { searchText = it },
+            notificationCount = notificationCount,
+            onNotificationsClick = onNotificationsClick
         )
 
         LazyColumn(
@@ -95,7 +101,9 @@ fun TeamsScreen(
 @Composable
 fun TopSection(
     searchText: String,
-    onSearchTextChange: (String) -> Unit
+    onSearchTextChange: (String) -> Unit,
+    notificationCount: Int,
+    onNotificationsClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -111,18 +119,52 @@ fun TopSection(
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            Text(
-                text = "LaLiga Teams",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "LaLiga Teams",
+                        color = Color.White,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
 
-            Text(
-                text = "Consulta equipos, estadios y plantillas",
-                color = Color(0x99FFFFFF),
-                fontSize = 14.sp
-            )
+                    Text(
+                        text = "Consulta equipos, estadios y plantillas",
+                        color = Color(0x99FFFFFF),
+                        fontSize = 14.sp
+                    )
+                }
+
+                Box {
+                    IconButton(onClick = onNotificationsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notificaciones",
+                            tint = Color.White
+                        )
+                    }
+
+                    if (notificationCount > 0) {
+                        Box(
+                            modifier = Modifier
+                                .size(18.dp)
+                                .align(Alignment.TopEnd)
+                                .background(Color(0xFFE53935), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = notificationCount.toString(),
+                                color = Color.White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(18.dp))
 
