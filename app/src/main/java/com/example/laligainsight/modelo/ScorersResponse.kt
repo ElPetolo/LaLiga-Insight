@@ -2,7 +2,6 @@ package com.example.laligainsight.modelo
 
 // Respuesta de la API de goleadores
 
-
 // Lista principal de goleadores que devuelve la API
 data class ScorersResponse(
     val scorers: List<Scorer>

@@ -1,5 +1,6 @@
 package com.example.laligainsight.modelo
 
+// Clase para presentar información extra de un jugador dada por la API
 data class PlayerExtraInfo(
     val fullName: String,
     val position: String,
