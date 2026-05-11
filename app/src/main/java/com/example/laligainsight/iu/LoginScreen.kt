@@ -52,7 +52,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .size(96.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF0F6E56))
+                    .background(AppColors.AvatarBackground)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.isotipo),
@@ -65,7 +65,7 @@ fun LoginScreen(
 
             Row {
                 Text("LaLiga", color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                Text("Insight", color = Color(0xFF1D9E75), fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                Text("Insight", color = AppColors.AccentGreen, fontSize = 30.sp, fontWeight = FontWeight.Bold)
             }
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -81,7 +81,7 @@ fun LoginScreen(
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0x141D9E75)),
+                colors = CardDefaults.cardColors(containerColor = AppColors.CardSoft),
                 shape = RoundedCornerShape(28.dp)
             ) {
                 Column(modifier = Modifier.padding(22.dp)) {
@@ -148,7 +148,7 @@ fun LoginScreen(
                     ) {
                         Text(
                             text = "¿Has olvidado tu contraseña?",
-                            color = Color(0xFF1D9E75)
+                            color = AppColors.AccentGreen
                         )
                     }
 
@@ -185,8 +185,8 @@ fun LoginScreen(
                             .height(54.dp),
                         shape = RoundedCornerShape(18.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF1D9E75),
-                            disabledContainerColor = Color(0x661D9E75)
+                            containerColor = AppColors.AccentGreen,
+                            disabledContainerColor = AppColors.CardSoft
                         )
                     ) {
                         Text(
@@ -222,7 +222,7 @@ fun LoginScreen(
                             .height(54.dp)
                             .border(
                                 width = 1.dp,
-                                color = Color(0x331D9E75),
+                                color = AppColors.CardSoft,
                                 shape = RoundedCornerShape(18.dp)
                             ),
                         shape = RoundedCornerShape(18.dp),
@@ -247,7 +247,7 @@ fun LoginScreen(
                     ) {
                         Text(
                             text = "¿No tienes cuenta? Crear cuenta",
-                            color = Color(0xFF1D9E75)
+                            color = AppColors.AccentGreen
                         )
                     }
                 }
@@ -260,9 +260,9 @@ fun LoginScreen(
 fun authTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedTextColor = Color.White,
     unfocusedTextColor = Color.White,
-    focusedBorderColor = Color(0xFF1D9E75),
+    focusedBorderColor = AppColors.AccentGreen,
     unfocusedBorderColor = Color(0x33FFFFFF),
-    focusedLabelColor = Color(0xFF1D9E75),
+    focusedLabelColor = AppColors.AccentGreen,
     unfocusedLabelColor = Color(0x99FFFFFF),
-    cursorColor = Color(0xFF1D9E75)
+    cursorColor = AppColors.AccentGreen
 )

@@ -53,6 +53,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.Icon
 import com.example.laligainsight.api.RetrofitCliente
 import com.example.laligainsight.modelo.Match
@@ -136,37 +137,22 @@ fun StandingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
+        ScreenHeader(
+            title = "Clasificación",
+            subtitle = "Tabla, goleadores y datos de LaLiga",
+            badge = "Rankings",
+            icon = Icons.Default.EmojiEvents
+        )
+
         Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-
-            Text(
-                text = "Clasificación",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Text(
-                text = "Consulta la tabla y los goleadores de LaLiga",
-                color = Color(0x99FFFFFF),
-                fontSize = 14.sp
-            )
-
             Spacer(modifier = Modifier.height(8.dp))
 
             StatsTabs(
@@ -250,7 +236,7 @@ fun StandingsScreen(
                                 Row(
                                     modifier = Modifier
                                         .background(
-                                            Color(0xFFE1062C),
+                                            AppColors.AccentGreen,
                                             RoundedCornerShape(20.dp)
                                         ) //Elegimos un fondo rojn
                                         .clickable {
@@ -267,7 +253,7 @@ fun StandingsScreen(
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier
                                             .background(
-                                                Color(0xFFE1062C),
+                                                AppColors.AccentGreen,
                                                 RoundedCornerShape(20.dp)
                                             )
                                             .clickable { extendido = true }
@@ -360,7 +346,7 @@ fun StandingItem(team: StandingTeam) {
             .background(
                 brush = Brush.horizontalGradient(
                     listOf(
-                        Color(0xFF18233D),
+                        AppColors.CardDark,
                         accentColor.copy(alpha = 0.75f)
                     )
                 ),
@@ -456,7 +442,7 @@ fun StatsTabs(selectedTab: String, onTabSelected: (String) -> Unit) {
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .background(
-                        color = if (selected) Color(0xFFE1062C) else Color(0xFF1B2440),
+                        color = if (selected) AppColors.AccentGreen else AppColors.CardDark,
                         shape = RoundedCornerShape(20.dp)
                     )
                 // Al pulsar una pestaña, cambiamos la seccion seleccionada
@@ -486,7 +472,7 @@ fun ScorerItem(scorer: Scorer, players: List<FirebasePlayer>){
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .background(
-                color = Color(0xFF18233D), // fondo oscuro
+                color = AppColors.CardDark, // fondo oscuro
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(horizontal = 10.dp, vertical = 10.dp),
@@ -644,7 +630,7 @@ fun ScorersCardItem(scorer: Scorer, position: Int, players: List<FirebasePlayer>
         1 -> Brush.horizontalGradient(listOf(Color(0xFFE4C313), Color(0xFFD9C878))) // Oro
         2 -> Brush.horizontalGradient(listOf(Color(0xFFC9CED6), Color(0xFFE3E7EF))) // Plata
         3 -> Brush.horizontalGradient(listOf(Color(0xFFC06A00), Color(0xFFD4A06A))) // Bronce
-        else -> Brush.horizontalGradient(listOf(Color(0xFF142345), Color(0xFF1B2A50))) // Normal
+        else -> Brush.horizontalGradient(listOf(AppColors.CardDark, AppColors.CardSoftStrong)) // Normal
     }
 
     // Buscamos la imagen del jugador en la lista de jugadores
@@ -757,7 +743,7 @@ fun ScorersViewSelector(selectedMode: String, onModeSelected: (String) -> Unit) 
             modifier = Modifier
                 .padding(end = 8.dp)
                 .background(
-                    color = if (selected) Color(0xFFE1062C) else Color(0xFF1B2440),
+                    color = if (selected) AppColors.AccentGreen else AppColors.CardDark,
                     shape = RoundedCornerShape(20.dp)
                 )
                 .clickable { onModeSelected(mode) }

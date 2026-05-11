@@ -61,15 +61,7 @@ fun FriendsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .padding(24.dp)
     ) {
@@ -115,7 +107,7 @@ fun FriendsScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Buscar",
-                        tint = Color(0xFF1D9E75)
+                        tint = AppColors.AccentGreen
                     )
                 }
             },
@@ -131,7 +123,7 @@ fun FriendsScreen(
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1D9E75)
+                containerColor = AppColors.AccentGreen
             ),
             shape = RoundedCornerShape(18.dp),
             modifier = Modifier
@@ -149,7 +141,7 @@ fun FriendsScreen(
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = it,
-                color = Color(0xFF1D9E75),
+                color = AppColors.AccentGreen,
                 fontSize = 13.sp
             )
         }
@@ -287,7 +279,7 @@ fun FriendsScreen(
                             }
                         }
                     ) {
-                        Text("Eliminar", color = Color(0xFF1D9E75))
+                        Text("Eliminar", color = AppColors.AccentGreen)
                     }
                 },
                 dismissButton = {
@@ -326,7 +318,7 @@ fun RequestRow(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
+            containerColor = AppColors.CardSoft
         ),
         shape = RoundedCornerShape(20.dp)
     ) {
@@ -352,7 +344,7 @@ fun RequestRow(
 
                 Text(
                     text = "Quiere ser tu amigo",
-                    color = Color(0x991D9E75),
+                    color = AppColors.TextSecondary,
                     fontSize = 13.sp
                 )
             }
@@ -361,7 +353,7 @@ fun RequestRow(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Aceptar",
-                    tint = Color(0xFF1D9E75)
+                    tint = AppColors.AccentGreen
                 )
             }
 
@@ -389,7 +381,7 @@ fun UserRow(
                 .fillMaxWidth()
                 .clickable { onUserClick() },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
+            containerColor = AppColors.CardSoft
         ),
         shape = RoundedCornerShape(20.dp)
     ) {
@@ -426,7 +418,7 @@ fun UserRow(
                         Icon(
                             imageVector = Icons.Default.PersonAdd,
                             contentDescription = actionText,
-                            tint = Color(0xFF1D9E75)
+                            tint = AppColors.AccentGreen
                         )
                     }
                 } else {
@@ -458,7 +450,7 @@ fun UserAvatar(user: User) {
             modifier = Modifier
                 .size(46.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF1D9E75)),
+                .background(AppColors.AvatarBackground),
             contentAlignment = Alignment.Center
         ) {
             Text(

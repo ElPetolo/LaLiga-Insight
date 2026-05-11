@@ -119,15 +119,7 @@ fun EditProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .padding(24.dp)
     ) {
@@ -159,7 +151,7 @@ fun EditProfileScreen(
                 modifier = Modifier
                     .size(124.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF0F6E56))
+                    .background(AppColors.AvatarBackground)
                     .clickable { showImageOptions = true }
             ) {
                 when {
@@ -279,7 +271,7 @@ fun EditProfileScreen(
                 .height(54.dp),
             shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1D9E75)
+                containerColor = AppColors.AccentGreen
             )
         ) {
             Text(
