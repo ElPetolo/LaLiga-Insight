@@ -73,7 +73,6 @@ class MainActivity : ComponentActivity() {
     private var selectedUserId by mutableStateOf<String?>(null)
 
     private var showUserProfileScreen by mutableStateOf(false)
-    private var showCompareScreen by mutableStateOf(false)
     private var showNotificationsScreen by mutableStateOf(false)
     private var notificationCount by mutableStateOf(0)
 
