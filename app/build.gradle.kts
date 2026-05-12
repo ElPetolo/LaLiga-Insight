@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.runtime)
     val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
 
     // AÑADIENDO LIBRERIAS NECESARIAS PARA EL DESARROLLO DEL PROYECTO

@@ -35,19 +35,19 @@ import com.example.laligainsight.iu.TeamsScreen
 import com.example.laligainsight.modelo.Player
 import com.example.laligainsight.modelo.Team
 import com.google.firebase.auth.FirebaseAuth
-import com.example.laligainsight.iu.StandingsScreen
+import com.example.laligainsight.iu.compare.CompareScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.example.laligainsight.iu.EditProfileScreen
 import com.example.laligainsight.iu.PrivacySecurityScreen
 import com.example.laligainsight.iu.FriendsScreen
 import com.example.laligainsight.iu.UserProfileScreen
-import com.example.laligainsight.iu.CompareScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.laligainsight.viewmodel.ScorersViewModel
 import androidx.compose.runtime.collectAsState
 import com.example.laligainsight.iu.AppColors
 import com.example.laligainsight.iu.NotificationsScreen
+import com.example.laligainsight.iu.StandingsScreen
 
 
 enum class MainTab{
