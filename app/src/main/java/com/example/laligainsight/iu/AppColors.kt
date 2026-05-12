@@ -32,4 +32,5 @@ object AppColors {
     val ButtonSecondary = Color(0xFF243A63)
     val Danger = Color(0xFFC93C3C)
     val AvatarBackground = Color(0xFF2D4374)
+    //cesar ,marica
 }
