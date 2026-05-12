@@ -16,15 +16,7 @@ fun AuthBackground(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
     ) {
         Box(
             modifier = Modifier
@@ -44,7 +36,7 @@ fun AuthBackground(
                 .offset(x = (-120).dp, y = 520.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(Color(0x331D9E75), Color.Transparent)
+                        listOf(AppColors.CardSoft, Color.Transparent)
                     ),
                     CircleShape
                 )

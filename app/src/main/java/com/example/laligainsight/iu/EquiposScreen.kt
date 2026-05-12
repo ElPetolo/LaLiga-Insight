@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -51,18 +52,10 @@ fun TeamsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
-        TopSection(
+        HomeHeader(
             searchText = searchText,
             onSearchTextChange = { searchText = it },
             notificationCount = notificationCount,
@@ -99,6 +92,58 @@ fun TeamsScreen(
 }
 
 @Composable
+fun HomeHeader(
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    notificationCount: Int,
+    onNotificationsClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        ScreenHeader(
+            title = "LaLiga Teams",
+            subtitle = "Consulta equipos, estadios y plantillas",
+            badge = "Temporada 25/26",
+            icon = Icons.Default.SportsSoccer,
+            actionIcon = Icons.Default.Notifications,
+            onActionClick = onNotificationsClick
+        )
+
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = onSearchTextChange,
+            placeholder = {
+                Text("Buscar equipo...", color = AppColors.TextSecondary)
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(26.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Buscar",
+                    tint = AppColors.AccentGreen
+                )
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = AppColors.CardDark,
+                unfocusedContainerColor = AppColors.CardSoft,
+                focusedBorderColor = AppColors.AccentGreen,
+                unfocusedBorderColor = AppColors.AccentBlue.copy(alpha = 0.55f),
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                cursorColor = AppColors.AccentGreen
+            )
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+    }
+}
+
+@Composable
 fun TopSection(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
@@ -110,7 +155,7 @@ fun TopSection(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
+            containerColor = AppColors.CardSoft
         ),
         shape = RoundedCornerShape(28.dp)
     ) {
@@ -123,20 +168,14 @@ fun TopSection(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "LaLiga Teams",
-                        color = Color.White,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = "Consulta equipos, estadios y plantillas",
-                        color = Color(0x99FFFFFF),
-                        fontSize = 14.sp
-                    )
-                }
+                ScreenHeader(
+                    title = "LaLiga Teams",
+                    subtitle = "Consulta equipos, estadios y plantillas",
+                    badge = "Temporada 25/26",
+                    icon = Icons.Default.SportsSoccer,
+                    actionIcon = Icons.Default.Notifications,
+                    onActionClick = onNotificationsClick
+                )
 
                 Box {
                     IconButton(onClick = onNotificationsClick) {
@@ -181,17 +220,17 @@ fun TopSection(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Buscar",
-                        tint = Color(0xFF1D9E75)
+                        tint = AppColors.AccentGreen
                     )
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFF111827),
-                    unfocusedContainerColor = Color(0x141D9E75),
-                    focusedBorderColor = Color(0xFF1D9E75),
-                    unfocusedBorderColor = Color(0x331D9E75),
+                    focusedContainerColor = AppColors.CardDark,
+                    unfocusedContainerColor = AppColors.CardSoft,
+                    focusedBorderColor = AppColors.AccentGreen,
+                    unfocusedBorderColor = AppColors.AccentBlue.copy(alpha = 0.55f),
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color(0xFF1D9E75)
+                    cursorColor = AppColors.AccentGreen
                 )
             )
         }
@@ -212,7 +251,7 @@ fun TeamCard(
             .clickable { onClick() },
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x141D9E75)
+            containerColor = AppColors.CardSoft
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -222,7 +261,7 @@ fun TeamCard(
                 .background(
                     brush = Brush.horizontalGradient(
                         listOf(
-                            Color(0xFF111827),
+                            AppColors.CardDark,
                             gradientColors[1].copy(alpha = 0.45f),
                             gradientColors[2].copy(alpha = 0.70f)
                         )
@@ -273,7 +312,7 @@ fun TeamCard(
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = "Ir al detalle",
-                tint = Color(0xFF1D9E75),
+                tint = AppColors.AccentGreen,
                 modifier = Modifier.size(32.dp)
             )
         }

@@ -448,22 +448,25 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
 
         // ======= Si la pestaña seleccionada es "Partidos", mostramos contenido provisional =======
         if (selectedTab.value == "Partidos") {
-
-            var selectedMatchTab by remember { mutableStateOf("Resultados") }
-
-            val resultados = matches
-                .filter { it.status == "FINISHED" }
-                .reversed()
-
-            val proximos = matches.filter {
-                it.status == "SCHEDULED" || it.status == "TIMED"
-            }
-
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                modifier = Modifier.padding(horizontal = 20.dp)
             ) {
+                // Estado para la pestaña seleccionada
+                var selectedMatchTab by remember { mutableStateOf("Resultados") }
+
+                // ==== Variables para dividir entre resultados y próximos partidos  ====
+                val resultados = matches
+                    .filter { it.status == "FINISHED" }
+                    .reversed() // Con esto, invertimos la lista
+                // Salen primero los últimos partidos jugados
+
+                val proximos = matches.filter {
+                    it.status == "SCHEDULED" || it.status == "TIMED"
+                }
+
+
+                // El usuario puede elegir entre consultar los próximos partidos o resultados
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -487,22 +490,48 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    val listaPartidos = if (selectedMatchTab == "Resultados") resultados else proximos
 
-                    listaPartidos.forEach { match ->
-                        PartidoItem(
-                            match = match,
-                            teamId = team.id,
-                            isFinished = selectedMatchTab == "Resultados"
-                        )
+                // ============ MUESTREO DE PARTIDOS ==========================0
+                if (selectedMatchTab == "Resultados") {
+
+                    // Column donde mostramos la lista de resultados
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                        // Recorremos los partidos finalizados
+                        resultados.forEach { match ->
+
+                            // Pintamos cada partido usando la funcion composable PartidoItem
+                            PartidoItem(
+                                match = match,
+                                teamId = team.id,
+                                isFinished = true
+                            )
+                        }
+                    }
+
+                } else {
+
+
+                    // Cuando el usuario pulse PRÓXIMOS dentro de la pestaña Partidos
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+
+                        // Recorremos los partidos pendientes
+                        /* No quedarán muchos ya que estamos en mayo... */
+                        proximos.forEach { match ->
+
+                            // Al ser proximo, no hay resultado todavía
+                            // Pintamos el partido sin marcador
+                            PartidoItem(
+                                match = match,
+                                teamId = team.id,
+                                isFinished = false // Gracias a esto indicamos que es próximo
+                            )
+                        }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(32.dp))
             }
+
         }
     }
 }

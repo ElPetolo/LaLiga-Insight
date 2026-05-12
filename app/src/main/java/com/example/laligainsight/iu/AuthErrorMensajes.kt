@@ -16,6 +16,4 @@ fun getFriendlyAuthError(e: Exception): String {
         "ERROR_TOO_MANY_REQUESTS" -> "Demasiados intentos. Inténtalo más tarde"
         else -> "Ha ocurrido un error. Inténtalo de nuevo"
     }
-
-    //commit pa cesar que no se entera
 }

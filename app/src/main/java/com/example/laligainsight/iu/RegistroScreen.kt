@@ -47,7 +47,7 @@ fun RegisterScreen(
                 modifier = Modifier
                     .size(86.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF0F6E56))
+                    .background(AppColors.AvatarBackground)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.isotipo),
@@ -76,7 +76,7 @@ fun RegisterScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0x141D9E75)
+                    containerColor = AppColors.CardSoft
                 ),
                 shape = RoundedCornerShape(28.dp)
             ) {
@@ -177,7 +177,7 @@ fun RegisterScreen(
                             .height(54.dp),
                         shape = RoundedCornerShape(18.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF1D9E75)
+                            containerColor = AppColors.AccentGreen
                         )
                     ) {
                         Text(
@@ -195,7 +195,7 @@ fun RegisterScreen(
                     ) {
                         Text(
                             text = "¿Ya tienes cuenta? Iniciar sesión",
-                            color = Color(0xFF1D9E75)
+                            color = AppColors.AccentGreen
                         )
                     }
                 }

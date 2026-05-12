@@ -46,6 +46,7 @@ import com.example.laligainsight.iu.CompareScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.laligainsight.viewmodel.ScorersViewModel
 import androidx.compose.runtime.collectAsState
+import com.example.laligainsight.iu.AppColors
 import com.example.laligainsight.iu.NotificationsScreen
 
 
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
     private var selectedUserId by mutableStateOf<String?>(null)
 
     private var showUserProfileScreen by mutableStateOf(false)
+    private var showCompareScreen by mutableStateOf(false)
     private var showNotificationsScreen by mutableStateOf(false)
     private var notificationCount by mutableStateOf(0)
 
@@ -441,9 +443,9 @@ fun SplashScreen() {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF0A1A14),
-                        Color(0xFF060E0B)
+                        AppColors.BackgroundTop,
+                        AppColors.BackgroundMiddle,
+                        AppColors.BackgroundBottom
                     )
                 )
             ),
@@ -455,10 +457,13 @@ fun SplashScreen() {
                 .align(Alignment.TopCenter)
                 .offset(y = (-80).dp)
                 .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(Color(0x551D9E75), Color(0x001D9E75))
-                    ),
-                    shape = CircleShape
+                    Brush.radialGradient(
+                        colors = listOf(
+                            AppColors.AccentBlue.copy(alpha = 0.28f),
+                            AppColors.AccentBlue.copy(alpha = 0.12f),
+                            Color.Transparent
+                        )
+                    )
                 )
         )
 
@@ -471,20 +476,20 @@ fun SplashScreen() {
                     modifier = Modifier
                         .size(155.dp)
                         .clip(CircleShape)
-                        .background(Color(0x1A1D9E75))
+                        .background(AppColors.AccentBlue.copy(alpha = 0.18f))
                 )
                 Box(
                     modifier = Modifier
                         .size(130.dp)
                         .clip(CircleShape)
-                        .background(Color(0x261D9E75))
+                        .background(AppColors.AccentBlue.copy(alpha = 0.28f))
                 )
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(110.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF0F6E56))
+                        .background(AppColors.AvatarBackground)
                 ) {
                     AsyncImage(
                         model = R.drawable.isotipo,
@@ -507,7 +512,7 @@ fun SplashScreen() {
                 )
                 Text(
                     text = "Insight",
-                    color = Color(0xFF1D9E75),
+                    color = AppColors.AccentBlue,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = (-0.02).em
@@ -531,7 +536,7 @@ fun SplashScreen() {
                     .width(120.dp)
                     .height(2.dp)
                     .clip(CircleShape),
-                color = Color(0xFF1D9E75),
+                color = AppColors.AccentGreen,
                 trackColor = Color(0x1AFFFFFF)
             )
 

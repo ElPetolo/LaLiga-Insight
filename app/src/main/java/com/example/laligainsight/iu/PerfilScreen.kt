@@ -56,15 +56,7 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
         Column(
@@ -131,7 +123,7 @@ fun ProfileScreen(
 
                     Text(
                         text = currentUser.favoriteTeam.ifEmpty { "Sin equipo favorito" },
-                        color = Color(0xFF1D9E75),
+                        color = AppColors.AccentGreen,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -142,7 +134,7 @@ fun ProfileScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0x141D9E75)
+                        containerColor = AppColors.ButtonSecondary
                     ),
                     shape = RoundedCornerShape(28.dp)
                 ) {
@@ -190,7 +182,7 @@ fun ProfileScreen(
                         onLogout()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFB3261E)
+                        containerColor = AppColors.Danger
                     ),
                     shape = RoundedCornerShape(18.dp),
                     modifier = Modifier
@@ -236,7 +228,7 @@ fun ProfileAvatar(
         modifier = Modifier
             .size(110.dp)
             .clip(CircleShape)
-            .background(Color(0xFF0F6E56))
+            .background(AppColors.AvatarBackground)
     ) {
         if (currentUser.profileImageUrl.isNotEmpty()) {
             AsyncImage(
@@ -265,14 +257,18 @@ fun ProfileButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0x221D9E75)
+            containerColor = AppColors.ButtonPrimary
         ),
         shape = RoundedCornerShape(18.dp),
-        modifier = Modifier.fillMaxWidth()
+
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(54.dp)
     ) {
         Text(
             text = text,
-            color = Color(0xFF1D9E75),
+            color = Color.White,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Bold
         )
     }

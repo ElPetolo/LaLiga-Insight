@@ -43,15 +43,7 @@ fun UserProfileScreen(
 
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0D1F1A),
-                        Color(0xFF07140F),
-                        Color(0xFF020605)
-                    )
-                )
-            )
+            .background(AppColors.MainBackgroundBrush)
             .statusBarsPadding()
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -78,8 +70,7 @@ fun UserProfileScreen(
                 modifier = Modifier
                     .size(110.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF0F6E56)),
-                contentAlignment = Alignment.Center
+                    .background(AppColors.AvatarBackground)
             ) {
                 if (u.profileImageUrl.isNotEmpty()) {
                     AsyncImage(
@@ -146,7 +137,7 @@ fun UserProfileScreen(
 
                 Text(
                     text = u.favoriteTeam.ifEmpty { "Sin equipo favorito" },
-                    color = Color(0xFF1D9E75),
+                    color = AppColors.AccentGreen,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -170,7 +161,7 @@ fun UserProfileScreen(
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFB3261E)
+                                containerColor = AppColors.Danger
                             )
                         ) {
                             Text("Eliminar amigo")
