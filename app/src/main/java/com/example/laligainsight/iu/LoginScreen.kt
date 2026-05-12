@@ -138,7 +138,7 @@ fun LoginScreen(
                                     error = "Te hemos enviado un correo para restablecer la contraseña"
                                 } catch (e: Exception) {
                                     Log.e("RESET_PASSWORD", "Error reset password", e)
-                                    error = e.localizedMessage ?: "No se pudo enviar el correo"
+                                    error = getFriendlyAuthError(e)
                                 } finally {
                                     loading = false
                                 }
@@ -166,6 +166,21 @@ fun LoginScreen(
                     Button(
                         onClick = {
                             scope.launch {
+                                if (email.isBlank() && password.isBlank()) {
+                                    error = "Introduce tu correo y contraseña"
+                                    return@launch
+                                }
+
+                                if (email.isBlank()) {
+                                    error = "Introduce tu correo electrónico"
+                                    return@launch
+                                }
+
+                                if (password.isBlank()) {
+                                    error = "Introduce tu contraseña"
+                                    return@launch
+                                }
+
                                 try {
                                     loading = true
                                     error = null
@@ -173,7 +188,7 @@ fun LoginScreen(
                                     onLoginSuccess()
                                 } catch (e: Exception) {
                                     Log.e("EMAIL_AUTH", "Error Email Sign-In", e)
-                                    error = e.localizedMessage ?: "Correo o contraseña incorrectos"
+                                    error = getFriendlyAuthError(e)
                                 } finally {
                                     loading = false
                                 }
@@ -210,7 +225,7 @@ fun LoginScreen(
                                     onLoginSuccess()
                                 } catch (e: Exception) {
                                     Log.e("GOOGLE_AUTH", "Error Google Sign-In", e)
-                                    error = e.localizedMessage ?: "No se pudo iniciar sesión con Google"
+                                    error = "No se pudo iniciar sesión con Google. Inténtalo de nuevo"
                                 } finally {
                                     loading = false
                                 }

@@ -130,6 +130,26 @@ fun RegisterScreen(
                     Button(
                         onClick = {
                             scope.launch {
+                                if (email.isBlank() && password.isBlank() && confirmPassword.isBlank()) {
+                                    error = "Introduce tus datos para crear la cuenta"
+                                    return@launch
+                                }
+
+                                if (email.isBlank()) {
+                                    error = "Introduce tu correo electrónico"
+                                    return@launch
+                                }
+
+                                if (password.isBlank()) {
+                                    error = "Introduce una contraseña"
+                                    return@launch
+                                }
+
+                                if (confirmPassword.isBlank()) {
+                                    error = "Repite la contraseña"
+                                    return@launch
+                                }
+
                                 if (password != confirmPassword) {
                                     error = "Las contraseñas no coinciden"
                                     return@launch
@@ -146,7 +166,7 @@ fun RegisterScreen(
                                     authRepository.register(email.trim(), password)
                                     onRegisterSuccess()
                                 } catch (e: Exception) {
-                                    error = "No se pudo crear la cuenta"
+                                    error = getFriendlyAuthError(e)
                                 } finally {
                                     loading = false
                                 }
