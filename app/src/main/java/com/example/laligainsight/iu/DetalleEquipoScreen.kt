@@ -2,6 +2,7 @@ package com.example.laligainsight.iu
 import android.os.Build
 import android.provider.Telephony
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -102,6 +103,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
     val scope = rememberCoroutineScope()
 
 
+
     // Ejecuta cuando cambia el ID del equipo o se entra por primera vez
     LaunchedEffect(team.id) {
 
@@ -172,6 +174,7 @@ fun TeamDetailScreen(team: Team, onBackClick: () -> Unit, onPlayerClick: (Player
             .background(AppColors.MainBackgroundBrush)
             .verticalScroll(rememberScrollState())
     ) {
+
 
         // ======================= CABECERA VISUAL DEL EQUIPO ===============================
 
@@ -595,7 +598,6 @@ fun PlayerDetailScreen(
     onBackClick: () -> Unit
 ) {
 
-    // Informacion extra del jugador
     val extraInfo = PlayerExtraInfo(
         fullName = player.name,
         position = traducirPosicion(player.position),
@@ -609,21 +611,17 @@ fun PlayerDetailScreen(
         relatedItems = emptyList()
     )
 
-    // Repositorio para gestionar las valoraciones en Firebase
-    val ratingRepository = remember {
-        RatingRepository()
-    }
-
-    // Media y numero de votos de la valoración
-    var ratingSummary by remember {
-        mutableStateOf(RatingSummary())
-    }
-
-    // Scope para lanzar corrutinas
+    val ratingRepository = remember { RatingRepository() }
+    var ratingSummary by remember { mutableStateOf(RatingSummary()) }
     val scope = rememberCoroutineScope()
 
+    val playersViewModel: PlayersViewModel = viewModel()
+    val firebasePlayers by playersViewModel.players.collectAsState()
 
-    // Al cargar el jugador, obtenemos su valoración
+    val firebasePlayer = firebasePlayers.firstOrNull {
+        it.playerName == player.name
+    }
+
     LaunchedEffect(player.id) {
         ratingSummary = ratingRepository.getRatingSummary(
             entityType = "player",
@@ -631,91 +629,221 @@ fun PlayerDetailScreen(
         )
     }
 
-    // Contenedor principal de la plantilla
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.MainBackgroundBrush)
-            .statusBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp)
+            .background(Color.Black)
     ) {
 
+        // ================= FOTO FONDO =================
 
-        // Incluimos botón para poder volver hacia atrás
-        IconButton(onClick = onBackClick) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Volver",
-                tint = Color.White
-            )
-        }
+        AsyncImage(
+            model = firebasePlayer?.imageUrl,
+            contentDescription = player.name,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(690.dp)
+                .align(Alignment.TopCenter),
+            contentScale = ContentScale.Crop,
+            alpha = 0.70f
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Overlay oscuro premium
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0x33000000),
+                            Color(0x88000000),
+                            Color(0xEE020617)
+                        )
+                    )
+                )
+        )
 
-        // Card con el detalle del jugador
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = AppColors.CardSoftStrong
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        // Glow azul lateral
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xAA0A1B3D),
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
+
+        // ================= CONTENIDO =================
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(horizontal = 22.dp)
         ) {
 
-            Column(
-                modifier = Modifier.padding(22.dp)
+            // BACK
+            IconButton(
+                onClick = onBackClick
             ) {
-
-                // Nombre del jugador
-                Text(
-                    text = extraInfo.fullName,
-                    color = Color.White,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = Color.White
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Posicion
-                Text(
-                    text = extraInfo.position,
-                    color = AppColors.AccentGreen,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-
-                Spacer(modifier = Modifier.height(18.dp))
-
-                // Sistema de valoraciones
-                RatingStars(
-                    summary = ratingSummary,
-                    onRatingSelected = { rating ->
-                        scope.launch {
-
-                            // Guardamos la valoración en Firebase
-                            ratingRepository.rateEntity(
-                                entityType = "player",
-                                entityId = player.id.toString(),
-                                rating = rating
-                            )
-
-
-                            // Actualizamos los datos tras el voto
-                            ratingSummary = ratingRepository.getRatingSummary(
-                                entityType = "player",
-                                entityId = player.id.toString()
-                            )
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(22.dp))
-
-                PlayerInfoLine("Día de nacimiento", extraInfo.birthday)
-                PlayerInfoLine("Nacionalidad", extraInfo.nationality)
             }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // NOMBRE
+            Text(
+                text = extraInfo.fullName,
+                color = Color.White,
+                fontSize = 42.sp,
+                fontWeight = FontWeight.ExtraBold,
+                lineHeight = 42.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // POSICIÓN
+            Text(
+                text = extraInfo.position,
+                color = Color(0xFF57F287),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // ================= CARDS =================
+
+            PlayerFloatingInfoCard(
+                title = "Nacimiento",
+                value = extraInfo.birthday,
+                accent = Color(0xFFFFB020)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PlayerFloatingInfoCard(
+                title = "Nacionalidad",
+                value = extraInfo.nationality,
+                accent = Color(0xFFFF4D8D)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ================= VALORACIÓN =================
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(110.dp),
+                shape = RoundedCornerShape(30.dp),
+                border = BorderStroke(
+                    1.dp,
+                    Color(0x443B82F6)
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0x331E3A8A)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 22.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Valora este jugador",
+                        color = Color(0xFF57F287),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    RatingStars(
+                        summary = ratingSummary,
+                        onRatingSelected = { rating ->
+                            scope.launch {
+                                ratingRepository.rateEntity(
+                                    entityType = "player",
+                                    entityId = player.id.toString(),
+                                    rating = rating
+                                )
+
+                                ratingSummary = ratingRepository.getRatingSummary(
+                                    entityType = "player",
+                                    entityId = player.id.toString()
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+    }
+}
+
+@Composable
+fun PlayerFloatingInfoCard(
+    title: String,
+    value: String,
+    accent: Color
+) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(110.dp),
+
+        shape = RoundedCornerShape(30.dp),
+
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color(0x443B82F6)
+        ),
+
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0x331E3A8A)
+        ),
+
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        )
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 22.dp),
+
+            verticalArrangement = Arrangement.Center
+        ) {
+
+            Text(
+                text = title,
+                color = accent,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = value,
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
         }
     }
 }
