@@ -7,11 +7,11 @@ object RetrofitTheSportsDb {
 
     private const val BASE_URL = "https://www.thesportsdb.com/"
 
-    val api: TheSportsDbApi by lazy {
+    val api: ApiTheSportsDb by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(TheSportsDbApi::class.java)
+            .create(ApiTheSportsDb::class.java)
     }
 }

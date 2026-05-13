@@ -25,29 +25,29 @@ import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
-import com.example.laligainsight.api.RetrofitCliente
-import com.example.laligainsight.iu.AuthScreen
-import com.example.laligainsight.iu.FavoriteTeamScreen
-import com.example.laligainsight.iu.PlayerDetailScreen
-import com.example.laligainsight.iu.ProfileScreen
-import com.example.laligainsight.iu.TeamDetailScreen
-import com.example.laligainsight.iu.TeamsScreen
+import com.example.laligainsight.api.ClienteRetrofit
+import com.example.laligainsight.iu.PantallaAutenticacion
+import com.example.laligainsight.iu.PantallaEquipoFavorito
+import com.example.laligainsight.iu.PantallaDetalleJugador
+import com.example.laligainsight.iu.PantallaPerfil
+import com.example.laligainsight.iu.PantallaDetalleEquipo
+import com.example.laligainsight.iu.PantallaEquipos
 import com.example.laligainsight.modelo.Player
-import com.example.laligainsight.modelo.Team
+import com.example.laligainsight.modelo.Equipo
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.example.laligainsight.iu.EditProfileScreen
-import com.example.laligainsight.iu.PrivacySecurityScreen
-import com.example.laligainsight.iu.FriendsScreen
-import com.example.laligainsight.iu.UserProfileScreen
+import com.example.laligainsight.iu.PantallaEditarPerfil
+import com.example.laligainsight.iu.PantallaPrivacidadSeguridad
+import com.example.laligainsight.iu.PantallaAmigos
+import com.example.laligainsight.iu.PantallaPerfilUsuario
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.laligainsight.viewmodel.ScorersViewModel
+import com.example.laligainsight.viewmodel.GoleadoresViewModel
 import androidx.compose.runtime.collectAsState
-import com.example.laligainsight.iu.AppColors
-import com.example.laligainsight.iu.CompareScreen
-import com.example.laligainsight.iu.NotificationsScreen
-import com.example.laligainsight.iu.StandingsScreen
+import com.example.laligainsight.iu.ColoresApp
+import com.example.laligainsight.iu.PantallaComparador
+import com.example.laligainsight.iu.PantallaNotificaciones
+import com.example.laligainsight.iu.PantallaClasificacion
 
 
 enum class MainTab{
@@ -56,8 +56,8 @@ enum class MainTab{
 
 class MainActivity : ComponentActivity() {
 
-    private var selectedTeam by mutableStateOf<Team?>(null)
-    private var teams by mutableStateOf<List<Team>>(emptyList())
+    private var selectedTeam by mutableStateOf<Equipo?>(null)
+    private var teams by mutableStateOf<List<Equipo>>(emptyList())
     private var selectedPlayer by mutableStateOf<Player?>(null)
 
     private var selectedTab by mutableStateOf(MainTab.TEAMS)
@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            val scorersViewModel: ScorersViewModel = viewModel()
+            val scorersViewModel: GoleadoresViewModel = viewModel()
             val scorers by scorersViewModel.scorers.collectAsState()
 
             DisposableEffect(isLoggedIn) {
@@ -142,7 +142,7 @@ class MainActivity : ComponentActivity() {
             if (showSplash || isCheckingAuth) {
                 SplashScreen()
             } else if (!isLoggedIn) {
-                AuthScreen(
+                PantallaAutenticacion(
                     onLoginSuccess = {
                         isLoggedIn = true
                     }
@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
                 when {
 
                     selectedUserId != null -> {
-                        UserProfileScreen(
+                        PantallaPerfilUsuario(
                             userId = selectedUserId!!,
                             onBack = {
                                 selectedUserId = null
@@ -162,7 +162,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showFavoriteTeamScreen -> {
-                        FavoriteTeamScreen(
+                        PantallaEquipoFavorito(
                             teams = teams,
                             onTeamSelected = {
                                 showFavoriteTeamScreen = false
@@ -176,7 +176,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showEditProfileScreen -> {
-                        EditProfileScreen(
+                        PantallaEditarPerfil(
                             currentUsername = "",
                             currentProfileImageUrl = "",
                             onBack = {
@@ -193,7 +193,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showPrivacySecurityScreen -> {
-                        PrivacySecurityScreen(
+                        PantallaPrivacidadSeguridad(
                             onBack = {
                                 showPrivacySecurityScreen = false
                                 showProfile = true
@@ -212,7 +212,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showFriendsScreen -> {
-                        FriendsScreen(
+                        PantallaAmigos(
                             onBack = {
                                 showFriendsScreen = false
                                 showProfile = true
@@ -225,7 +225,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showNotificationsScreen -> {
-                        NotificationsScreen(
+                        PantallaNotificaciones(
                             onBack = {
                                 showNotificationsScreen = false
                                 selectedTab = MainTab.TEAMS
@@ -234,7 +234,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showProfile -> {
-                        ProfileScreen(
+                        PantallaPerfil(
                             teams = teams,
                             onHomeClick = {
                                 showProfile = false
@@ -301,14 +301,14 @@ class MainActivity : ComponentActivity() {
                     }
 
                     selectedPlayer != null -> {
-                        PlayerDetailScreen(
+                        PantallaDetalleJugador(
                             player = selectedPlayer!!, // Suponemos que selectedPlayer no es nulo
                             onBackClick = { selectedPlayer = null }
                         )
                     }
 
                     selectedTeam != null -> {
-                        TeamDetailScreen(
+                        PantallaDetalleEquipo(
                             team = selectedTeam!!,
                             onBackClick = { selectedTeam = null },
                             onPlayerClick = { player -> selectedPlayer = player }
@@ -324,7 +324,7 @@ class MainActivity : ComponentActivity() {
                             // Pantalla principal de equipos
                             MainTab.TEAMS -> {
 
-                                TeamsScreen(
+                                PantallaEquipos(
                                     teams = teams,
                                     onTeamClick = { team ->
                                         selectedTeam = team
@@ -358,7 +358,7 @@ class MainActivity : ComponentActivity() {
 
                             // Pantalla nueva de clasificación/goleadores
                             MainTab.STANDINGS -> {
-                                StandingsScreen(
+                                PantallaClasificacion(
                                     onHomeClick = {
                                         selectedTab = MainTab.TEAMS
                                     },
@@ -377,7 +377,7 @@ class MainActivity : ComponentActivity() {
 
                             // Lo dejamos provisional para no romper el tab
                             MainTab.COMPARE -> {
-                                CompareScreen(
+                                PantallaComparador(
                                     scorers = scorers,
                                     onHomeClick = {
                                         selectedTab = MainTab.TEAMS
@@ -407,7 +407,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             try {
-                val response = RetrofitCliente.api.getTeams()
+                val response = ClienteRetrofit.api.getTeams()
                 teams = if (response.isSuccessful) {
                     response.body()?.teams ?: emptyList()
                 } else {
@@ -443,9 +443,9 @@ fun SplashScreen() {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        AppColors.BackgroundTop,
-                        AppColors.BackgroundMiddle,
-                        AppColors.BackgroundBottom
+                        ColoresApp.BackgroundTop,
+                        ColoresApp.BackgroundMiddle,
+                        ColoresApp.BackgroundBottom
                     )
                 )
             ),
@@ -459,8 +459,8 @@ fun SplashScreen() {
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            AppColors.AccentBlue.copy(alpha = 0.28f),
-                            AppColors.AccentBlue.copy(alpha = 0.12f),
+                            ColoresApp.AccentBlue.copy(alpha = 0.28f),
+                            ColoresApp.AccentBlue.copy(alpha = 0.12f),
                             Color.Transparent
                         )
                     )
@@ -476,20 +476,20 @@ fun SplashScreen() {
                     modifier = Modifier
                         .size(155.dp)
                         .clip(CircleShape)
-                        .background(AppColors.AccentBlue.copy(alpha = 0.18f))
+                        .background(ColoresApp.AccentBlue.copy(alpha = 0.18f))
                 )
                 Box(
                     modifier = Modifier
                         .size(130.dp)
                         .clip(CircleShape)
-                        .background(AppColors.AccentBlue.copy(alpha = 0.28f))
+                        .background(ColoresApp.AccentBlue.copy(alpha = 0.28f))
                 )
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(110.dp)
                         .clip(CircleShape)
-                        .background(AppColors.AvatarBackground)
+                        .background(ColoresApp.AvatarBackground)
                 ) {
                     AsyncImage(
                         model = R.drawable.isotipo,
@@ -512,7 +512,7 @@ fun SplashScreen() {
                 )
                 Text(
                     text = "Insight",
-                    color = AppColors.AccentBlue,
+                    color = ColoresApp.AccentBlue,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = (-0.02).em
@@ -536,7 +536,7 @@ fun SplashScreen() {
                     .width(120.dp)
                     .height(2.dp)
                     .clip(CircleShape),
-                color = AppColors.AccentGreen,
+                color = ColoresApp.AccentGreen,
                 trackColor = Color(0x1AFFFFFF)
             )
 
