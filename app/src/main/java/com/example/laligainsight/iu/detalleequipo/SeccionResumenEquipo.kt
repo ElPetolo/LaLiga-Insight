@@ -193,9 +193,10 @@ fun SeccionResumenEquipo(
     // Aquí se juntan datos de clasificación, racha, goles y progreso de temporada.
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         if (teamStanding != null) {
+
             // Diferencia de goles con formato + o - para que se vea más claro.
             val difGoles = teamStanding.goalDifference
-            val diffStr = if (difGoles >= 0) "+$difGoles" else "-$difGoles"
+            val diffStr = if (difGoles >= 0) "+$difGoles" else "$difGoles"
 
             // Bloque de clasificación general del equipo.
             SectionLabel("CLASIFICACIÓN")

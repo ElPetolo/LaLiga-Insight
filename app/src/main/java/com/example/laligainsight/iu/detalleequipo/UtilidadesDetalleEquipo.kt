@@ -50,6 +50,8 @@ fun traducirPosicion(position: String?): String {
         else -> position ?: "Posición no disponible"
     }
 }
+
+
 // Funcion para pasar la hora UTC de la API a la hora española
 @RequiresApi(Build.VERSION_CODES.O)
 fun formatoHoraPartido(utcDate: String): String {
