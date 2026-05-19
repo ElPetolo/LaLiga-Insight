@@ -7,6 +7,7 @@ object RetrofitTheSportsDb {
 
     private const val BASE_URL = "https://www.thesportsdb.com/"
 
+    // Dejamos la instancia creada una sola vez para reutilizarla en toda la app.
     val api: ApiTheSportsDb by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

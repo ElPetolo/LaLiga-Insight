@@ -31,6 +31,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 
+// Convierte una foto capturada como Bitmap en un archivo temporal para poder subirla a Firebase Storage.
 fun bitmapToUri(context: Context, bitmap: Bitmap): Uri {
     val file = File(context.cacheDir, "temp_profile.jpg")
     val stream = FileOutputStream(file)
@@ -41,6 +42,7 @@ fun bitmapToUri(context: Context, bitmap: Bitmap): Uri {
 }
 
 @Composable
+// Pantalla de edición del perfil con cambio de username y foto.
 fun PantallaEditarPerfil(
     currentUsername: String,
     currentProfileImageUrl: String,
@@ -63,6 +65,7 @@ fun PantallaEditarPerfil(
 
 
     LaunchedEffect(Unit) {
+        // Cargamos los datos reales del usuario para no depender de valores pasados vacíos.
         val user = repo.getUser()
         if (user != null) {
             username = user.username
@@ -73,6 +76,7 @@ fun PantallaEditarPerfil(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
+        // Si se elige imagen de galería, limpiamos la posible foto de cámara previa.
         imageUri = uri
         cameraBitmap = null
     }
@@ -80,11 +84,13 @@ fun PantallaEditarPerfil(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
+        // Si se usa la cámara, anulamos la imagen de galería.
         cameraBitmap = bitmap
         imageUri = null
     }
 
     if (showImageOptions) {
+        // Diálogo para que el usuario elija de dónde sale la nueva foto de perfil.
         AlertDialog(
             onDismissRequest = { showImageOptions = false },
             title = {
@@ -123,6 +129,7 @@ fun PantallaEditarPerfil(
             .statusBarsPadding()
             .padding(24.dp)
     ) {
+        // Botón para volver sin guardar.
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -142,10 +149,12 @@ fun PantallaEditarPerfil(
 
         Spacer(modifier = Modifier.height(28.dp))
 
+        // Zona central de la foto de perfil editable.
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            // Avatar pulsable que abre las opciones de cambio de imagen.
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -156,6 +165,7 @@ fun PantallaEditarPerfil(
             ) {
                 when {
                     imageUri != null -> {
+                        // Previsualización de la imagen elegida desde galería.
                         AsyncImage(
                             model = imageUri,
                             contentDescription = "Nueva foto",
@@ -165,6 +175,7 @@ fun PantallaEditarPerfil(
                     }
 
                     cameraBitmap != null -> {
+                        // Previsualización de la imagen sacada con cámara.
                         AsyncImage(
                             model = cameraBitmap,
                             contentDescription = "Nueva foto",
@@ -174,6 +185,7 @@ fun PantallaEditarPerfil(
                     }
 
                     currentImageUrl.isNotEmpty() -> {
+                        // Si todavía no se ha cambiado nada, mostramos la foto actual.
                         AsyncImage(
                             model = currentImageUrl,
                             contentDescription = "Foto actual",
@@ -183,6 +195,7 @@ fun PantallaEditarPerfil(
                     }
 
                     else -> {
+                        // Fallback si el usuario aún no tiene foto.
                         Text(
                             text = "Foto",
                             color = Color.White,
@@ -204,6 +217,7 @@ fun PantallaEditarPerfil(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Campo del username editable.
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -220,6 +234,7 @@ fun PantallaEditarPerfil(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Acción principal para guardar los cambios del perfil.
         Button(
             onClick = {
                 scope.launch {
@@ -235,6 +250,7 @@ fun PantallaEditarPerfil(
                         error = null
 
                         try {
+                            // Primero actualizamos el username, porque es la validación más sensible.
                             repo.updateUsername(clean)
                         } catch (e: Exception) {
                             error = e.message
@@ -249,6 +265,7 @@ fun PantallaEditarPerfil(
                         }
 
                         if (finalUri != null) {
+                            // Si hay imagen nueva, la subimos y guardamos la URL definitiva.
                             val url = repo.uploadProfileImage(finalUri)
                             repo.updateProfileImage(url)
                         }

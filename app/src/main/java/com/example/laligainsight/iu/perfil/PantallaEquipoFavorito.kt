@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 
 @Composable
+// Permite elegir y guardar el equipo favorito del usuario desde una rejilla sencilla.
 fun PantallaEquipoFavorito(
     teams: List<Equipo>,
     onTeamSelected: () -> Unit,
@@ -41,6 +42,7 @@ fun PantallaEquipoFavorito(
             .statusBarsPadding()
             .padding(horizontal = 16.dp)
     ) {
+        // Cabecera simple con botón de volver y título de la selección.
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -70,6 +72,7 @@ fun PantallaEquipoFavorito(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Rejilla de equipos para mostrar muchas opciones sin hacer una lista demasiado larga.
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -78,17 +81,20 @@ fun PantallaEquipoFavorito(
         ) {
             items(teams) { team ->
 
+                // Cada columna representa una opción de equipo lista para guardar con un toque.
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .clickable {
                             scope.launch {
+                                // Guardamos nombre y escudo para reutilizarlos luego en el perfil.
                                 repo.updateFavoriteTeam(team.name, team.crest)
                                 onTeamSelected()
                             }
                         }
                 ) {
 
+                    // Caja blanca circular para normalizar cómo se ven todos los escudos.
                     Box(
                         modifier = Modifier
                             .size(72.dp)
@@ -105,6 +111,7 @@ fun PantallaEquipoFavorito(
 
                     Spacer(modifier = Modifier.height(6.dp))
 
+                    // Nombre del equipo debajo del escudo.
                     Text(
                         text = team.name,
                         color = Color.White,

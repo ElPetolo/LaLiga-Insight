@@ -11,6 +11,7 @@ class RepositorioValoraciones {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    // Montamos un id estable para que cada usuario tenga una única valoración por entidad.
     private fun ratingDocId(
         entityType: String,
         entityId: String,
@@ -19,12 +20,14 @@ class RepositorioValoraciones {
         return "${entityType}_${entityId}_${userId}"
     }
 
+    // Guarda o sobrescribe la valoración del usuario actual.
     suspend fun rateEntity(
         entityType: String,
         entityId: String,
         rating: Int
     ) {
 
+        // Si no hay usuario autenticado no tiene sentido guardar valoraciones personales.
         val userId = auth.currentUser?.uid ?: return
 
         val docId = ratingDocId(
@@ -38,6 +41,7 @@ class RepositorioValoraciones {
             "entityId" to entityId,
             "userId" to userId,
             "rating" to rating,
+            // La fecha la genera Firestore para que todas las valoraciones sigan el mismo criterio.
             "updatedAt" to FieldValue.serverTimestamp()
         )
 
@@ -47,6 +51,7 @@ class RepositorioValoraciones {
             .await()
     }
 
+    // Calcula la media global y recupera también la valoración concreta del usuario logueado.
     suspend fun getRatingSummary(
         entityType: String,
         entityId: String
@@ -60,6 +65,7 @@ class RepositorioValoraciones {
             .get()
             .await()
 
+        // Extraemos únicamente los números válidos para calcular la media.
         val ratings = snapshot.documents.mapNotNull {
             it.getLong("rating")?.toInt()
         }
@@ -71,6 +77,7 @@ class RepositorioValoraciones {
         }
 
         val userRating = if (userId != null) {
+            // Buscamos dentro de las valoraciones cuál pertenece al usuario actual.
             snapshot.documents.firstOrNull {
                 it.getString("userId") == userId
             }?.getLong("rating")?.toInt() ?: 0

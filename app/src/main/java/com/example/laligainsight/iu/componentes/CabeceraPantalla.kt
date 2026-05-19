@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
+// Cabecera reutilizable para dar contexto visual a las pantallas principales.
 fun CabeceraPantalla(
     title: String,
     subtitle: String,
@@ -38,6 +39,7 @@ fun CabeceraPantalla(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
+        // Esta Box actúa como lienzo de la cabecera: fondo, icono decorativo y textos.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -52,6 +54,7 @@ fun CabeceraPantalla(
                 )
                 .padding(horizontal = 28.dp, vertical = 30.dp)
         ) {
+            // Icono grande de fondo solo decorativo para reforzar el tema de la pantalla.
             Icon(
                 imageVector = icon,
                 contentDescription = null,
@@ -61,6 +64,7 @@ fun CabeceraPantalla(
                     .align(Alignment.BottomEnd)
             )
 
+            // Columna principal con badge, título y subtítulo.
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -69,6 +73,7 @@ fun CabeceraPantalla(
                     verticalAlignment = Alignment.Top
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
+                        // Badge pequeño para situar rápido el contexto de la pantalla.
                         Box(
                             modifier = Modifier
                                 .clip(CircleShape)
@@ -105,6 +110,7 @@ fun CabeceraPantalla(
                     }
 
                     if (actionIcon != null && onActionClick != null) {
+                        // Botón opcional de acción rápida, por ejemplo notificaciones.
                         IconButton(
                             onClick = onActionClick,
                             modifier = Modifier

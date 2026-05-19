@@ -2,6 +2,7 @@ package com.example.laligainsight.iu
 
 import com.google.firebase.auth.FirebaseAuthException
 
+// Traducimos los códigos de Firebase a mensajes más claros para mostrarlos en pantalla.
 fun getFriendlyAuthError(e: Exception): String {
     val code = (e as? FirebaseAuthException)?.errorCode
 

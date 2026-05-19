@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
+// Fondo compartido de login y registro para mantener la misma ambientación visual.
 fun FondoAutenticacion(
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -18,6 +19,7 @@ fun FondoAutenticacion(
             .fillMaxSize()
             .background(ColoresApp.MainBackgroundBrush)
     ) {
+        // Mancha superior para romper el fondo plano y centrar la atención en el formulario.
         Box(
             modifier = Modifier
                 .size(340.dp)
@@ -30,6 +32,7 @@ fun FondoAutenticacion(
                 )
         )
 
+        // Mancha inferior secundaria que equilibra visualmente la composición.
         Box(
             modifier = Modifier
                 .size(280.dp)
@@ -42,6 +45,7 @@ fun FondoAutenticacion(
                 )
         )
 
+        // Aquí se dibuja el contenido real de login o registro encima del fondo decorativo.
         content()
     }
 }

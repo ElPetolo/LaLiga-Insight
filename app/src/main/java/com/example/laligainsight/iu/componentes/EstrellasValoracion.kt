@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.example.laligainsight.modelo.ResumenValoracion
 
 @Composable
+// Muestra la valoración del usuario y permite tocar una estrella para enviar una nueva nota.
 fun EstrellasValoracion(
     summary: ResumenValoracion,
     onRatingSelected: (Int) -> Unit
@@ -24,6 +25,7 @@ fun EstrellasValoracion(
 
     Column {
 
+        // Fila de 1 a 5 estrellas para reflejar y modificar la nota del usuario.
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -50,6 +52,7 @@ fun EstrellasValoracion(
                     modifier = Modifier
                         .size(34.dp)
                         .clickable {
+                            // Al tocar una estrella devolvemos la nota elegida hacia arriba.
                             onRatingSelected(i)
                         }
                 )
@@ -60,6 +63,7 @@ fun EstrellasValoracion(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Debajo mostramos el resumen global de valoraciones de esa entidad.
         Text(
             text =
                 if (summary.count == 0) {

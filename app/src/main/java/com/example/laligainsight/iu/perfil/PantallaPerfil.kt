@@ -27,6 +27,7 @@ import com.example.laligainsight.modelo.Usuario
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
+// Pantalla del perfil propio: carga los datos del usuario y da acceso a sus ajustes principales.
 fun PantallaPerfil(
     teams: List<Equipo>,
     onHomeClick: () -> Unit,
@@ -45,6 +46,7 @@ fun PantallaPerfil(
     var refreshTrigger by remember { mutableStateOf(0) }
 
     LaunchedEffect(refreshTrigger) {
+        // Nos aseguramos de que exista el documento del usuario antes de leer su perfil.
         val firebaseUser = FirebaseAuth.getInstance().currentUser
 
         if (firebaseUser != null) {
@@ -59,6 +61,7 @@ fun PantallaPerfil(
             .background(ColoresApp.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
+        // Esta parte ocupa casi toda la pantalla y se puede desplazar si el contenido crece.
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -70,10 +73,12 @@ fun PantallaPerfil(
             Spacer(modifier = Modifier.height(32.dp))
 
             user?.let { currentUser ->
+                // Avatar principal del usuario.
                 ProfileAvatar(currentUser = currentUser)
 
                 Spacer(modifier = Modifier.height(22.dp))
 
+                // Nombre visible del perfil.
                 Text(
                     text = currentUser.username,
                     color = Color.White,
@@ -81,6 +86,7 @@ fun PantallaPerfil(
                     fontWeight = FontWeight.Bold
                 )
 
+                // Número de amigos para resumir la actividad social del perfil.
                 Text(
                     text = "${currentUser.friends.size} amigos",
                     color = Color(0x80FFFFFF),
@@ -90,6 +96,7 @@ fun PantallaPerfil(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Etiqueta de apoyo para separar los datos personales del equipo favorito.
                 Text(
                     text = "Equipo favorito",
                     color = Color(0x80FFFFFF),
@@ -103,6 +110,7 @@ fun PantallaPerfil(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (currentUser.favoriteTeamCrest.isNotEmpty()) {
+                        // Contenedor del escudo para que no se mezcle visualmente con el fondo.
                         Box(
                             modifier = Modifier
                                 .size(34.dp)
@@ -131,6 +139,7 @@ fun PantallaPerfil(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+                // Card central con las acciones principales del perfil.
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
@@ -176,6 +185,7 @@ fun PantallaPerfil(
 
                 Spacer(modifier = Modifier.height(22.dp))
 
+                // Botón aislado para remarcar que cerrar sesión es una acción distinta al resto.
                 Button(
                     onClick = {
                         FirebaseAuth.getInstance().signOut()
@@ -198,6 +208,7 @@ fun PantallaPerfil(
 
                 Spacer(modifier = Modifier.height(20.dp))
             } ?: run {
+                // Mientras aún no ha llegado Firestore mostramos un estado de carga sencillo.
                 Spacer(modifier = Modifier.height(120.dp))
 
                 Text(
@@ -220,6 +231,7 @@ fun PantallaPerfil(
 }
 
 @Composable
+// Muestra la imagen del perfil si existe; si no, usa el isotipo de la app como fallback.
 fun ProfileAvatar(
     currentUser: Usuario
 ) {
@@ -231,6 +243,7 @@ fun ProfileAvatar(
             .background(ColoresApp.AvatarBackground)
     ) {
         if (currentUser.profileImageUrl.isNotEmpty()) {
+            // Si el usuario ya subió foto, esta imagen ocupa todo el círculo.
             AsyncImage(
                 model = currentUser.profileImageUrl,
                 contentDescription = "Foto de perfil",
@@ -240,6 +253,7 @@ fun ProfileAvatar(
                 contentScale = ContentScale.Crop
             )
         } else {
+            // Si no hay foto usamos el isotipo para que el perfil no quede vacío.
             Image(
                 painter = painterResource(id = R.drawable.isotipo),
                 contentDescription = "Logo",
@@ -250,10 +264,12 @@ fun ProfileAvatar(
 }
 
 @Composable
+// Botón reutilizable para las acciones rápidas del perfil.
 fun ProfileButton(
     text: String,
     onClick: () -> Unit
 ) {
+    // Mismo estilo para todas las entradas del menú del perfil.
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(

@@ -13,12 +13,15 @@ class RepositorioUsuario {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
+    // Carga el documento del usuario autenticado y lo convierte al modelo de la app.
     suspend fun getUser(): Usuario? {
         val uid = auth.currentUser?.uid ?: return null
         val doc = db.collection("users").document(uid).get().await()
         return doc.toObject(Usuario::class.java)
     }
 
+    // Si el usuario entra por primera vez, le creamos su documento base en Firestore.
+    // Si ya existe, aprovechamos para rellenar campos nuevos que puedan faltar.
     suspend fun createUserIfNotExists(email: String) {
         val uid = auth.currentUser?.uid ?: return
         val username = email.substringBefore("@")
@@ -75,6 +78,7 @@ class RepositorioUsuario {
         }
     }
 
+    // Actualiza el username y guarda también su versión en minúsculas para búsquedas.
     suspend fun updateUsername(newUsername: String) {
         val uid = auth.currentUser?.uid ?: return
         val cleanUsername = newUsername.trim()
@@ -93,6 +97,7 @@ class RepositorioUsuario {
             .await()
     }
 
+    // Guarda el equipo favorito junto al escudo para poder pintarlo luego sin otra consulta.
     suspend fun updateFavoriteTeam(teamName: String, teamCrest: String) {
         val uid = auth.currentUser?.uid ?: return
 
@@ -106,6 +111,7 @@ class RepositorioUsuario {
             .await()
     }
 
+    // Cambia la URL de la foto de perfil en el documento del usuario.
     suspend fun updateProfileImage(imageUrl: String) {
         val uid = auth.currentUser?.uid ?: return
 
@@ -114,6 +120,7 @@ class RepositorioUsuario {
             .await()
     }
 
+    // Busca usuarios por prefijo de username y excluye al usuario actual de los resultados.
     suspend fun searchUsersByUsername(query: String): List<Usuario> {
         val currentUid = auth.currentUser?.uid ?: return emptyList()
         val cleanQuery = query.trim().lowercase()
@@ -132,6 +139,7 @@ class RepositorioUsuario {
             .filter { it.uid != currentUid }
     }
 
+    // Añade la solicitud en ambos lados para que cada usuario vea el estado que le toca.
     suspend fun sendFriendRequest(friendUid: String) {
         val currentUid = auth.currentUser?.uid ?: return
 
@@ -144,6 +152,7 @@ class RepositorioUsuario {
             .await()
     }
 
+    // Al aceptar, la petición desaparece y ambos usuarios pasan a ser amigos.
     suspend fun acceptFriendRequest(friendUid: String) {
         val currentUid = auth.currentUser?.uid ?: return
 
@@ -166,6 +175,7 @@ class RepositorioUsuario {
             .await()
     }
 
+    // Rechazar solo limpia la solicitud pendiente en ambos documentos.
     suspend fun rejectFriendRequest(friendUid: String) {
         val currentUid = auth.currentUser?.uid ?: return
 
@@ -178,6 +188,7 @@ class RepositorioUsuario {
             .await()
     }
 
+    // Resuelve la lista de ids de amigos a objetos completos de tipo Usuario.
     suspend fun getFriends(): List<Usuario> {
         val currentUser = getUser() ?: return emptyList()
 
@@ -195,6 +206,7 @@ class RepositorioUsuario {
         return friends
     }
 
+    // Sube la imagen al storage del usuario y devuelve la URL pública para guardarla en Firestore.
     suspend fun uploadProfileImage(uri: Uri): String {
 
         val uid = auth.currentUser?.uid ?: return ""
@@ -211,6 +223,7 @@ class RepositorioUsuario {
 
     }
 
+    // Convierte las solicitudes recibidas en una lista de usuarios lista para la UI.
     suspend fun getReceivedRequests(): List<Usuario> {
         val currentUser = getUser() ?: return emptyList()
 
@@ -228,6 +241,7 @@ class RepositorioUsuario {
         return requests
     }
 
+    // Igual que las recibidas, pero con las que el usuario ya ha enviado.
     suspend fun getSentRequests(): List<Usuario> {
         val currentUser = getUser() ?: return emptyList()
 
@@ -245,6 +259,7 @@ class RepositorioUsuario {
         return requests
     }
 
+    // Elimina la amistad en los dos documentos para no dejar estados inconsistentes.
     suspend fun removeFriend(friendUid: String) {
         val currentUid = auth.currentUser?.uid ?: return
 
@@ -257,11 +272,13 @@ class RepositorioUsuario {
             .await()
     }
 
+    // Recupera el perfil de cualquier usuario a partir de su uid.
     suspend fun getUserById(uid: String): Usuario? {
         val doc = db.collection("users").document(uid).get().await()
         return doc.toObject(Usuario::class.java)
     }
 
+    // Comprueba si el username ya está cogido antes de permitir el cambio.
     suspend fun isUsernameAvailable(username: String): Boolean {
         val clean = username.trim().lowercase()
 

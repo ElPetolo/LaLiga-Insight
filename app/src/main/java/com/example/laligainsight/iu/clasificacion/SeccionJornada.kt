@@ -44,6 +44,7 @@ fun SeccionJornada(
     var extendido by remember { mutableStateOf(false) }
 
     Box {
+        // Selector compacto de jornada que abre el desplegable al pulsarlo.
         Row(
             modifier = Modifier
                 .background(
@@ -76,6 +77,7 @@ fun SeccionJornada(
             )
         }
 
+        // Menú con todas las jornadas disponibles de la competición.
         DropdownMenu(
             expanded = extendido,
             onDismissRequest = {
@@ -98,6 +100,7 @@ fun SeccionJornada(
 
     Spacer(modifier = Modifier.height(12.dp))
 
+    // Lista de partidos filtrada según la jornada seleccionada arriba.
     LazyColumn {
         items(partidosJornada) { match ->
             PartidoRankingItem(match = match)

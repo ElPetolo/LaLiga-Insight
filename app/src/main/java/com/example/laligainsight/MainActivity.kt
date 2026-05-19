@@ -54,14 +54,18 @@ enum class MainTab{
     TEAMS, STANDINGS, COMPARE, PROFILE
 }
 
+// Activity principal: controla splash, sesión y navegación entre pantallas de Compose.
 class MainActivity : ComponentActivity() {
 
+    // Estado base de navegación y datos compartidos entre pantallas.
     private var selectedTeam by mutableStateOf<Equipo?>(null)
     private var teams by mutableStateOf<List<Equipo>>(emptyList())
     private var selectedPlayer by mutableStateOf<Player?>(null)
 
+    // Pestaña principal activa de la navegación inferior.
     private var selectedTab by mutableStateOf(MainTab.TEAMS)
 
+    // Flags que controlan splash, autenticación y pantallas secundarias.
     private var showSplash by mutableStateOf(true)
     private var composeReady by mutableStateOf(false)
     private var isCheckingAuth by mutableStateOf(true)
@@ -86,13 +90,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val splashScreen = installSplashScreen()
+        // La splash nativa sigue visible hasta que Compose ya está preparado para dibujar.
         splashScreen.setKeepOnScreenCondition { !composeReady }
 
         lifecycleScope.launch {
+            // Dejamos una pequeña pausa para que la entrada a la app no sea brusca.
             delay(2500L)
             showSplash = false
         }
 
+        // Forzamos una recarga del usuario para comprobar si la sesión sigue siendo válida.
         FirebaseAuth.getInstance().currentUser?.reload()
             ?.addOnCompleteListener { task ->
                 if (task.isSuccessful && FirebaseAuth.getInstance().currentUser != null) {
@@ -117,6 +124,7 @@ class MainActivity : ComponentActivity() {
                 val uid = FirebaseAuth.getInstance().currentUser?.uid
 
                 if (isLoggedIn && uid != null) {
+                    // Escuchamos cambios en solicitudes recibidas para pintar el contador en tiempo real.
                     val listener = com.google.firebase.firestore.FirebaseFirestore
                         .getInstance()
                         .collection("users")
@@ -135,13 +143,15 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-
+                // En cuanto Compose entra por primera vez, ya podemos soltar la splash del sistema.
                 composeReady = true // Compose listo -> splash del sistema desaparece
             }
 
             if (showSplash || isCheckingAuth) {
+                // Mientras no sabemos si hay sesión válida, dejamos la pantalla de carga.
                 SplashScreen()
             } else if (!isLoggedIn) {
+                // Si no hay sesión activa se muestra el flujo de autenticación.
                 PantallaAutenticacion(
                     onLoginSuccess = {
                         isLoggedIn = true
@@ -151,6 +161,7 @@ class MainActivity : ComponentActivity() {
                 when {
 
                     selectedUserId != null -> {
+                        // Si se ha pulsado otro usuario, abrimos su perfil desde la pantalla de amigos.
                         PantallaPerfilUsuario(
                             userId = selectedUserId!!,
                             onBack = {
@@ -162,6 +173,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showFavoriteTeamScreen -> {
+                        // Pantalla para seleccionar o cambiar el equipo favorito.
                         PantallaEquipoFavorito(
                             teams = teams,
                             onTeamSelected = {
@@ -176,6 +188,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showEditProfileScreen -> {
+                        // Pantalla de edición del perfil del usuario actual.
                         PantallaEditarPerfil(
                             currentUsername = "",
                             currentProfileImageUrl = "",
@@ -193,6 +206,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showPrivacySecurityScreen -> {
+                        // Sección separada con acciones sensibles de la cuenta.
                         PantallaPrivacidadSeguridad(
                             onBack = {
                                 showPrivacySecurityScreen = false
@@ -212,6 +226,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showFriendsScreen -> {
+                        // Pantalla social con búsquedas y gestión de amistades.
                         PantallaAmigos(
                             onBack = {
                                 showFriendsScreen = false
@@ -225,6 +240,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showNotificationsScreen -> {
+                        // Bandeja de solicitudes pendientes.
                         PantallaNotificaciones(
                             onBack = {
                                 showNotificationsScreen = false
@@ -234,6 +250,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     showProfile -> {
+                        // Perfil propio del usuario logueado.
                         PantallaPerfil(
                             teams = teams,
                             onHomeClick = {
@@ -301,6 +318,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     selectedPlayer != null -> {
+                        // Si se selecciona un jugador desde el detalle del equipo, se abre su ficha.
                         PantallaDetalleJugador(
                             player = selectedPlayer!!, // Suponemos que selectedPlayer no es nulo
                             onBackClick = { selectedPlayer = null }
@@ -308,6 +326,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     selectedTeam != null -> {
+                        // Si se toca un equipo en el listado principal, entramos a su detalle.
                         PantallaDetalleEquipo(
                             team = selectedTeam!!,
                             onBackClick = { selectedTeam = null },
@@ -317,13 +336,11 @@ class MainActivity : ComponentActivity() {
 
                     else -> {
 
-                        // Mantenemos la navegación principal por pestañas.
-                        // Esto respeta el flujo que ya existía en main.
+                        // Si no hay ninguna pantalla secundaria abierta, entramos en la navegación por pestañas.
                         when (selectedTab) {
 
-                            // Pantalla principal de equipos
                             MainTab.TEAMS -> {
-
+                                // Home principal con el catálogo de equipos.
                                 PantallaEquipos(
                                     teams = teams,
                                     onTeamClick = { team ->
@@ -336,28 +353,24 @@ class MainActivity : ComponentActivity() {
                                         selectedTab = MainTab.STANDINGS
                                     },
 
-                                    // Navegamos a la pestaña de comparación
                                     onCompareClick = {
                                         selectedTab = MainTab.COMPARE
                                     },
 
-                                    // Navegamos a la pantalla de perfil
                                     onProfileClick = {
                                         showProfile = true
                                     },
 
-                                    // Conteo (numero) de notificaciones pendientes
                                     notificationCount = notificationCount,
 
-                                    // Abrimos la pantalla de notificaciones
                                     onNotificationsClick = {
                                         showNotificationsScreen = true
                                     }
                                 )
                             }
 
-                            // Pantalla nueva de clasificación/goleadores
                             MainTab.STANDINGS -> {
+                                // Pantalla de clasificación y goleadores.
                                 PantallaClasificacion(
                                     onHomeClick = {
                                         selectedTab = MainTab.TEAMS
@@ -375,8 +388,8 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            // Lo dejamos provisional para no romper el tab
                             MainTab.COMPARE -> {
+                                // Comparador de jugadores usando los goleadores cargados por ViewModel.
                                 PantallaComparador(
                                     scorers = scorers,
                                     onHomeClick = {
@@ -395,8 +408,8 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            // Lo dejamos provisional para no tocar aún el perfil/login de Héctor
                             MainTab.PROFILE -> {
+                                // Esta pestaña no pinta contenido directo; redirige al flujo del perfil.
                                 showProfile = true
                             }
                         }
@@ -407,6 +420,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             try {
+                // Los equipos se cargan una vez al arrancar y se comparten con las pantallas que lo necesiten.
                 val response = ClienteRetrofit.api.getTeams()
                 teams = if (response.isSuccessful) {
                     response.body()?.teams ?: emptyList()
@@ -425,8 +439,10 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
+// Splash personalizada mientras se resuelve la sesión y Compose termina de arrancar.
 fun SplashScreen() {
     val infiniteTransition = rememberInfiniteTransition(label = "loader")
+    // La barra inferior se anima en bucle mientras termina la inicialización de la app.
     val progress by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -451,6 +467,7 @@ fun SplashScreen() {
             ),
         contentAlignment = Alignment.Center
     ) {
+        // Mancha de color superior para dar profundidad al fondo.
         Box(
             modifier = Modifier
                 .size(300.dp)
@@ -467,10 +484,12 @@ fun SplashScreen() {
                 )
         )
 
+        // Columna central con logo, nombre de la app y barra de progreso.
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Anillos concéntricos para destacar visualmente el isotipo.
             Box(contentAlignment = Alignment.Center, modifier = Modifier.size(155.dp)) {
                 Box(
                     modifier = Modifier
@@ -530,6 +549,7 @@ fun SplashScreen() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Indicador mínimo de carga para reforzar que la app sigue trabajando.
             LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
@@ -543,6 +563,7 @@ fun SplashScreen() {
             Spacer(modifier = Modifier.height(56.dp))
         }
 
+        // Firma del proyecto colocada abajo para cerrar la composición visual.
         Text(
             text = "HÉCTOR CUÉLLAR Y CÉSAR ALONSO",
             color = Color(0x33FFFFFF),

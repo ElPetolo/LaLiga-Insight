@@ -60,11 +60,13 @@ fun FilaEstadisticaComparador(
         ),
         shape = RoundedCornerShape(22.dp)
     ) {
+        // Cada card representa una métrica concreta comparada entre los dos jugadores.
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(18.dp)
         ) {
+            // Fila superior con valor izquierdo, nombre de la estadística y valor derecho.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -98,6 +100,7 @@ fun FilaEstadisticaComparador(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Barra horizontal que traduce visualmente la diferencia entre ambos valores.
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -105,6 +108,7 @@ fun FilaEstadisticaComparador(
                     .clip(RoundedCornerShape(50.dp))
                     .background(Color(0x22000000))
             ) {
+                // Tramo del jugador 1.
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -115,6 +119,7 @@ fun FilaEstadisticaComparador(
                         )
                 )
 
+                // Tramo del jugador 2.
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()

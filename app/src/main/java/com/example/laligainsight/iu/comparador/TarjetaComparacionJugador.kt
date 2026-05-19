@@ -60,6 +60,7 @@ fun TarjetaComparacionJugador(
         ),
         shape = RoundedCornerShape(24.dp)
     ) {
+        // Tarjeta resumen del jugador seleccionado en uno de los lados de la comparativa.
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -75,10 +76,11 @@ fun TarjetaComparacionJugador(
                     .background(
                         if (scorer == null) Color.Black
                         else Color.White
-                    ),
+                ),
                 contentAlignment = Alignment.Center
             ) {
                 if (scorer != null && imageUrl.isNotEmpty()) {
+                    // Si encontramos foto del jugador en Firebase, la mostramos ocupando todo el círculo.
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = scorer.player.name,
@@ -88,6 +90,7 @@ fun TarjetaComparacionJugador(
                         contentScale = ContentScale.Crop
                     )
                 } else {
+                    // Si no hay jugador elegido o no existe imagen, usamos un icono neutro.
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
@@ -99,6 +102,7 @@ fun TarjetaComparacionJugador(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Nombre del jugador seleccionado o placeholder si aún no se ha elegido ninguno.
             Text(
                 text = scorer?.player?.name ?: "Selecciona jugador",
                 color = Color.White,
@@ -107,6 +111,7 @@ fun TarjetaComparacionJugador(
                 maxLines = 2
             )
 
+            // Club del jugador para añadir contexto a la comparación.
             Text(
                 text = scorer?.team?.name ?: "",
                 color = Color(0x99FFFFFF),

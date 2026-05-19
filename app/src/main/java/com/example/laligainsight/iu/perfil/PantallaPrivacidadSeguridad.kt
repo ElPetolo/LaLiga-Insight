@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
+// Reúne acciones relacionadas con la cuenta: correo, cambio de contraseña y cierre de sesión.
 fun PantallaPrivacidadSeguridad(
     onBack: () -> Unit,
     onLogout: () -> Unit
@@ -34,6 +35,7 @@ fun PantallaPrivacidadSeguridad(
             .statusBarsPadding()
             .padding(24.dp)
     ) {
+        // Botón para volver a la pantalla anterior.
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -53,6 +55,7 @@ fun PantallaPrivacidadSeguridad(
 
         Spacer(modifier = Modifier.height(28.dp))
 
+        // Card con la información de correo y la acción de cambio de contraseña.
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = ColoresApp.CardSoft
@@ -63,6 +66,7 @@ fun PantallaPrivacidadSeguridad(
             Column(
                 modifier = Modifier.padding(20.dp)
             ) {
+                // Fila que muestra el correo vinculado a la cuenta actual.
                 Row {
                     Icon(
                         imageVector = Icons.Default.Mail,
@@ -90,6 +94,7 @@ fun PantallaPrivacidadSeguridad(
 
                 Spacer(modifier = Modifier.height(22.dp))
 
+                // Botón para pedir el correo de restablecimiento de contraseña.
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,6 +112,7 @@ fun PantallaPrivacidadSeguridad(
                             return@Button
                         }
 
+                        // Firebase envía el correo y nosotros solo reflejamos el resultado en pantalla.
                         FirebaseAuth.getInstance()
                             .sendPasswordResetEmail(email)
                             .addOnSuccessListener {
@@ -133,6 +139,7 @@ fun PantallaPrivacidadSeguridad(
                 }
                 message?.let {
                     Spacer(modifier = Modifier.height(12.dp))
+                    // Feedback del resultado del envío del correo.
                     Text(
                         text = it,
                         color = ColoresApp.AccentGreen,
@@ -144,6 +151,7 @@ fun PantallaPrivacidadSeguridad(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // Botón final aislado para remarcar la acción de cerrar sesión.
         Button(
             onClick = {
                 auth.signOut()

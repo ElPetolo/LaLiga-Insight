@@ -16,6 +16,7 @@ class ClienteAutenticacionGoogle(
     private val auth = FirebaseAuth.getInstance()
     private val credentialManager = CredentialManager.create(context)
 
+    // Aquí se lanza el flujo completo de Google Sign-In y, si todo va bien, se enlaza con Firebase.
     suspend fun signInWithGoogle() {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)

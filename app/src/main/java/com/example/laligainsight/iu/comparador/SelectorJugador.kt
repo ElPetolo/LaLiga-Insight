@@ -33,6 +33,7 @@ fun SelectorJugador(
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
+        // Título pequeño para distinguir qué lado de la comparación estamos editando.
         Text(
             text = title.uppercase(),
             color = Color(0x99FFFFFF),
@@ -42,6 +43,7 @@ fun SelectorJugador(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Botón que hace de selector visible del jugador actual.
         Button(
             onClick = { expanded = true },
             colors = ButtonDefaults.buttonColors(
@@ -57,11 +59,13 @@ fun SelectorJugador(
             )
         }
 
+        // Desplegable con todos los jugadores disponibles en la comparativa.
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
             scorers.forEach { scorer ->
+                // Cada opción actualiza el jugador de ese lado y cierra el menú.
                 DropdownMenuItem(
                     text = {
                         Text(scorer.player.name)

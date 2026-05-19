@@ -22,6 +22,7 @@ import com.example.laligainsight.modelo.Usuario
 import kotlinx.coroutines.launch
 
 @Composable
+// Perfil público de otro usuario con acciones de amistad según la relación actual.
 fun PantallaPerfilUsuario(
     userId: String,
     onBack: () -> Unit
@@ -35,6 +36,7 @@ fun PantallaPerfilUsuario(
     var refreshTrigger by remember { mutableStateOf(0) }
 
     LaunchedEffect(userId, refreshTrigger) {
+        // Cargamos tanto el perfil visitado como el usuario actual para decidir qué acciones mostrar.
         user = repo.getUserById(userId)
         currentUser = repo.getUser()
     }
@@ -50,6 +52,7 @@ fun PantallaPerfilUsuario(
 
     )
     {
+        // Botón superior para volver a la pantalla de amigos.
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
@@ -65,7 +68,7 @@ fun PantallaPerfilUsuario(
 
         user?.let { u ->
 
-            // FOTO
+            // Avatar principal del usuario visitado.
             Box(
                 modifier = Modifier
                     .size(110.dp)
@@ -91,7 +94,7 @@ fun PantallaPerfilUsuario(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // USERNAME
+            // Nombre visible del usuario.
             Text(
                 text = u.username,
                 color = Color.White,
@@ -110,7 +113,7 @@ fun PantallaPerfilUsuario(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // EQUIPO
+            // Bloque del equipo favorito del usuario.
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
@@ -147,12 +150,14 @@ fun PantallaPerfilUsuario(
 
             currentUser?.let { me ->
 
+                // Comprobamos la relación actual entre el usuario logueado y el perfil visitado.
                 val isFriend = me.friends.contains(u.uid)
                 val sent = me.sentRequests.contains(u.uid)
                 val received = me.receivedRequests.contains(u.uid)
 
                 when {
                     isFriend -> {
+                        // Si ya sois amigos, permitimos eliminar la amistad.
                         Button(
                             onClick = {
                                 scope.launch {
@@ -169,10 +174,12 @@ fun PantallaPerfilUsuario(
                     }
 
                     sent -> {
+                        // Si la solicitud ya se envió, solo informamos del estado.
                         Text("Solicitud enviada", color = Color.Gray)
                     }
 
                     received -> {
+                        // Si la solicitud la envió la otra persona, mostramos aceptar o rechazar.
                         Row {
                             Button(onClick = {
                                 scope.launch {
@@ -197,6 +204,7 @@ fun PantallaPerfilUsuario(
                     }
 
                     else -> {
+                        // Caso por defecto: todavía no existe relación y se puede enviar solicitud.
                         Button(onClick = {
                             scope.launch {
                                 repo.sendFriendRequest(u.uid)

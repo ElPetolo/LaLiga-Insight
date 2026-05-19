@@ -33,6 +33,7 @@ import coil.compose.AsyncImage
 import com.example.laligainsight.modelo.Equipo
 
 @Composable
+// Pantalla principal de equipos con búsqueda, listado y acceso a la navegación inferior.
 fun PantallaEquipos(
     teams: List<Equipo>,
     onTeamClick: (Equipo) -> Unit,
@@ -45,6 +46,7 @@ fun PantallaEquipos(
 ) {
     var searchText by remember { mutableStateOf("") }
 
+    // El filtro se hace en memoria porque la lista de equipos es pequeña y ya viene cargada.
     val filteredTeams = teams.filter {
         it.name.contains(searchText, ignoreCase = true)
     }
@@ -55,6 +57,7 @@ fun PantallaEquipos(
             .background(ColoresApp.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
+        // Parte superior fija con el título de la pantalla y el buscador.
         HomeHeader(
             searchText = searchText,
             onSearchTextChange = { searchText = it },
@@ -69,6 +72,7 @@ fun PantallaEquipos(
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            // Cada elemento de la lista se pinta con una card propia para que el acceso al detalle sea claro.
             items(filteredTeams) { team ->
                 TeamCard(
                     team = team,
@@ -92,6 +96,7 @@ fun PantallaEquipos(
 }
 
 @Composable
+// Cabecera de la home con el buscador y el acceso rápido a notificaciones.
 fun HomeHeader(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
@@ -101,6 +106,7 @@ fun HomeHeader(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
+        // Esta cabecera grande da contexto a la pantalla antes de mostrar resultados.
         CabeceraPantalla(
             title = "LaLiga Teams",
             subtitle = "Consulta equipos, estadios y plantillas",
@@ -110,6 +116,7 @@ fun HomeHeader(
             onActionClick = onNotificationsClick
         )
 
+        // Campo de búsqueda para filtrar por nombre según se escribe.
         OutlinedTextField(
             value = searchText,
             onValueChange = onSearchTextChange,
@@ -144,6 +151,7 @@ fun HomeHeader(
 }
 
 @Composable
+// Versión alternativa de la cabecera que quedó preparada por si se quiere usar un bloque superior más grande.
 fun TopSection(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
@@ -164,6 +172,7 @@ fun TopSection(
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
+            // En esta versión la cabecera y el icono de notificaciones comparten la misma tarjeta.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -178,6 +187,7 @@ fun TopSection(
                 )
 
                 Box {
+                    // El icono abre la bandeja de notificaciones.
                     IconButton(onClick = onNotificationsClick) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
@@ -187,6 +197,7 @@ fun TopSection(
                     }
 
                     if (notificationCount > 0) {
+                        // Este circulito rojo funciona como badge visual del número de avisos pendientes.
                         Box(
                             modifier = Modifier
                                 .size(18.dp)
@@ -207,6 +218,7 @@ fun TopSection(
 
             Spacer(modifier = Modifier.height(18.dp))
 
+            // Buscador integrado dentro de la card superior.
             OutlinedTextField(
                 value = searchText,
                 onValueChange = onSearchTextChange,
@@ -238,6 +250,7 @@ fun TopSection(
 }
 
 @Composable
+// Tarjeta visual de cada equipo en el listado principal.
 fun TeamCard(
     team: Equipo,
     onClick: () -> Unit
@@ -270,6 +283,7 @@ fun TeamCard(
                 .padding(horizontal = 18.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Caja circular blanca para que todos los escudos mantengan el mismo encuadre.
             Box(
                 modifier = Modifier
                     .size(74.dp)
@@ -287,6 +301,7 @@ fun TeamCard(
 
             Spacer(modifier = Modifier.width(18.dp))
 
+            // Bloque central con la información textual principal del equipo.
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = team.name,
@@ -309,6 +324,7 @@ fun TeamCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
+            // Flecha final para dejar claro que la tarjeta es navegable.
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = "Ir al detalle",
@@ -319,6 +335,7 @@ fun TeamCard(
     }
 }
 
+// Asignamos un degradado fijo por equipo para que cada card tenga una identidad reconocible.
 fun getTeamGradient(teamName: String): List<Color> {
     return when (teamName) {
         "FC Barcelona" ->

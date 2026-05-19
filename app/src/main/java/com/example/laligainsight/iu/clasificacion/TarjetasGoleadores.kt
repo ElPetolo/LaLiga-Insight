@@ -26,6 +26,7 @@ import com.example.laligainsight.modelo.JugadorFirebase
 import com.example.laligainsight.modelo.Scorer
 
 @Composable
+// Vista alternativa de goleadores en formato cards en lugar de tabla.
 fun TarjetasGoleadores(
     scorers: List<Scorer>,
     players: List<JugadorFirebase>,
@@ -34,14 +35,17 @@ fun TarjetasGoleadores(
 ) {
     when {
         isLoading -> {
+            // Mientras llegan los datos mostramos solo el indicador de carga.
             CircularProgressIndicator(color = Color.White)
         }
 
         error != null -> {
+            // Si falla la carga, enseñamos el mensaje recibido.
             Text(text = error, color = Color.Red)
         }
 
         else -> {
+            // Cuando todo está listo, pintamos una card por goleador.
             LazyColumn {
                 itemsIndexed(scorers) { index, scorer ->
                     ScorersCardItem(
@@ -56,6 +60,7 @@ fun TarjetasGoleadores(
 }
 
 @Composable
+// Card individual de un goleador con posición, foto, escudo y goles.
 fun ScorersCardItem(scorer: Scorer, position: Int, players: List<JugadorFirebase>) {
     // El degradado cambia según la posición para destacar el top 3.
     val cardBrush = when (position) {
@@ -81,12 +86,14 @@ fun ScorersCardItem(scorer: Scorer, position: Int, players: List<JugadorFirebase
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Imagen del jugador obtenida desde Firebase.
         AsyncImage(
             model = imageUrl,
             contentDescription = scorer.player.name,
             modifier = Modifier.size(46.dp)
         )
 
+        // Número de la posición dentro del ranking.
         Text(
             text = "$position.",
             color = Color.White,
@@ -94,6 +101,7 @@ fun ScorersCardItem(scorer: Scorer, position: Int, players: List<JugadorFirebase
             modifier = Modifier.width(38.dp)
         )
 
+        // Escudo del equipo actual del goleador.
         AsyncImage(
             model = scorer.team.crest,
             contentDescription = scorer.team.name,
@@ -105,6 +113,7 @@ fun ScorersCardItem(scorer: Scorer, position: Int, players: List<JugadorFirebase
                 .weight(1f)
                 .padding(start = 10.dp)
         ) {
+            // Nombre del jugador y dato principal de goles.
             Text(
                 text = scorer.player.name,
                 color = Color.White,
@@ -121,6 +130,7 @@ fun ScorersCardItem(scorer: Scorer, position: Int, players: List<JugadorFirebase
 }
 
 @Composable
+// Selector simple para cambiar entre la vista de cards y la tabla de goleadores.
 fun ScorersViewSelector(selectedMode: String, onModeSelected: (String) -> Unit) {
     // Este selector solo cambia entre vista en cards y vista en tabla.
     val modes = listOf("CARDS", "TABLA")

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.example.laligainsight.modelo.Scorer
 
 @Composable
+// Pantalla para comparar dos jugadores cara a cara a partir de sus estadísticas de goleadores.
 fun PantallaComparador(
     scorers: List<Scorer>,
     onHomeClick: () -> Unit,
@@ -45,6 +46,7 @@ fun PantallaComparador(
             .background(ColoresApp.MainBackgroundBrush)
             .statusBarsPadding()
     ) {
+        // Cabecera principal de la pantalla.
         CabeceraPantalla(
             title = "Comparar jugadores",
             subtitle = "Analiza goles, asistencias y rendimiento",
@@ -58,6 +60,7 @@ fun PantallaComparador(
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp)
         ) {
+            // Bloque superior con los dos selectores independientes.
             // Los selectores de arriba solo cambian el jugador asociado a cada columna.
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -100,6 +103,7 @@ fun PantallaComparador(
 
             Spacer(modifier = Modifier.height(28.dp))
 
+            // Título de la zona donde ya se muestra la comparación numérica.
             Text(
                 text = "Comparación",
                 color = Color.White,
@@ -110,6 +114,7 @@ fun PantallaComparador(
             Spacer(modifier = Modifier.height(14.dp))
 
             if (player1 != null && player2 != null) {
+                // Solo pintamos métricas cuando ambos lados de la comparación están completos.
                 val p1 = player1!!
                 val p2 = player2!!
 

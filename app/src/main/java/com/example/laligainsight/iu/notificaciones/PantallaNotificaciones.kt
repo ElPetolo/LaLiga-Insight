@@ -23,6 +23,7 @@ import com.example.laligainsight.modelo.Usuario
 import kotlinx.coroutines.launch
 
 @Composable
+// Pantalla dedicada a las solicitudes pendientes para que el usuario las gestione rápido.
 fun PantallaNotificaciones(
     onBack: () -> Unit
 ) {
@@ -32,6 +33,7 @@ fun PantallaNotificaciones(
     var requests by remember { mutableStateOf<List<Usuario>>(emptyList()) }
     var message by remember { mutableStateOf<String?>(null) }
 
+    // Recargamos la lista después de cada acción para reflejar el estado real en Firestore.
     fun refresh() {
         scope.launch {
             requests = repo.getReceivedRequests()
@@ -49,6 +51,7 @@ fun PantallaNotificaciones(
             .statusBarsPadding()
             .padding(24.dp)
     ) {
+        // Acción para salir de la bandeja de notificaciones.
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -84,6 +87,7 @@ fun PantallaNotificaciones(
         Spacer(modifier = Modifier.height(24.dp))
 
         if (requests.isEmpty()) {
+            // Estado vacío cuando no hay solicitudes pendientes.
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -99,10 +103,12 @@ fun PantallaNotificaciones(
                 )
             }
         } else {
+            // Listado de solicitudes para tratarlas una a una.
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(requests) { user ->
+                    // Cada solicitud se presenta dentro de una card independiente.
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -116,6 +122,7 @@ fun PantallaNotificaciones(
                                 .padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Avatar del usuario que envió la solicitud.
                             UserAvatar(user = user)
 
                             Spacer(modifier = Modifier.width(12.dp))
@@ -123,6 +130,7 @@ fun PantallaNotificaciones(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
+                                // Texto principal y explicación breve del motivo de la notificación.
                                 Text(
                                     text = user.username,
                                     color = Color.White,
@@ -140,6 +148,7 @@ fun PantallaNotificaciones(
                             IconButton(
                                 onClick = {
                                     scope.launch {
+                                        // Aceptar actualiza Firestore y refresca la lista.
                                         repo.acceptFriendRequest(user.uid)
                                         message = "Solicitud aceptada"
                                         refresh()
@@ -156,6 +165,7 @@ fun PantallaNotificaciones(
                             IconButton(
                                 onClick = {
                                     scope.launch {
+                                        // Rechazar limpia la petición y actualiza la UI al instante.
                                         repo.rejectFriendRequest(user.uid)
                                         message = "Solicitud rechazada"
                                         refresh()

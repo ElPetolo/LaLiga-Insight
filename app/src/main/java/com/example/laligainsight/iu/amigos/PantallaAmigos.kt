@@ -29,6 +29,7 @@ import com.example.laligainsight.modelo.Usuario
 import kotlinx.coroutines.launch
 
 @Composable
+// Pantalla para buscar usuarios, revisar solicitudes y gestionar la lista de amigos.
 fun PantallaAmigos(
     onBack: () -> Unit,
     onUserClick: (String) -> Unit
@@ -44,6 +45,7 @@ fun PantallaAmigos(
     var message by remember { mutableStateOf<String?>(null) }
     var friendToRemove by remember { mutableStateOf<Usuario?>(null) }
 
+    // Reutilizamos esta recarga para no duplicar llamadas después de aceptar, rechazar o borrar.
     fun refreshData() {
         scope.launch {
             friends = repo.getFriends()
@@ -53,6 +55,7 @@ fun PantallaAmigos(
     }
 
     LaunchedEffect(Unit) {
+        // Primera carga de datos al entrar en la pantalla.
         friends = repo.getFriends()
         receivedRequests = repo.getReceivedRequests()
         sentRequests = repo.getSentRequests()
@@ -65,6 +68,7 @@ fun PantallaAmigos(
             .statusBarsPadding()
             .padding(24.dp)
     ) {
+        // Flecha superior para volver al perfil.
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -90,6 +94,7 @@ fun PantallaAmigos(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Input para escribir el username que queremos buscar.
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
@@ -116,6 +121,7 @@ fun PantallaAmigos(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Botón explícito por si el usuario prefiere confirmar la búsqueda en vez de usar el icono.
         Button(
             onClick = {
                 scope.launch {
@@ -154,6 +160,7 @@ fun PantallaAmigos(
         ) {
             if (receivedRequests.isNotEmpty()) {
                 item {
+                    // Sección para atender primero las solicitudes entrantes.
                     SectionTitle("Solicitudes recibidas")
                 }
 
@@ -180,10 +187,12 @@ fun PantallaAmigos(
 
             if (results.isNotEmpty()) {
                 item {
+                    // Resultados de la búsqueda manual.
                     SectionTitle("Resultados")
                 }
 
                 items(results) { user ->
+                    // Aquí decidimos qué acción mostrar según la relación actual con ese usuario.
                     val alreadyFriend = friends.any { it.uid == user.uid }
                     val alreadySent = sentRequests.any { it.uid == user.uid }
                     val alreadyReceived = receivedRequests.any { it.uid == user.uid }
@@ -214,6 +223,7 @@ fun PantallaAmigos(
 
             if (sentRequests.isNotEmpty()) {
                 item {
+                    // Bloque para ver a quién ya se le ha enviado petición.
                     SectionTitle("Solicitudes enviadas")
                 }
 
@@ -229,6 +239,7 @@ fun PantallaAmigos(
             }
 
             item {
+                // Sección fija con la lista actual de amistades.
                 SectionTitle("Mis amigos")
             }
 
@@ -260,6 +271,7 @@ fun PantallaAmigos(
             }
         }
         if (friendToRemove != null) {
+            // Diálogo de confirmación para evitar borrar amigos por error al pulsar.
             AlertDialog(
                 onDismissRequest = { friendToRemove = null },
                 title = {
@@ -297,6 +309,7 @@ fun PantallaAmigos(
 }
 
 @Composable
+// Título simple para separar las distintas secciones de la lista.
 fun SectionTitle(
     text: String
 ) {
@@ -310,11 +323,13 @@ fun SectionTitle(
 }
 
 @Composable
+// Fila usada para mostrar una solicitud recibida con aceptar o rechazar.
 fun RequestRow(
     user: Usuario,
     onAccept: () -> Unit,
     onReject: () -> Unit
 ) {
+    // Card de una solicitud recibida con accesos rápidos de aceptar y rechazar.
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -328,6 +343,7 @@ fun RequestRow(
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Avatar de quien ha enviado la solicitud.
             UserAvatar(user = user)
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -335,6 +351,7 @@ fun RequestRow(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+                // Nombre + texto auxiliar para explicar la acción pendiente.
                 Text(
                     text = user.username,
                     color = Color.White,
@@ -369,6 +386,7 @@ fun RequestRow(
 }
 
 @Composable
+// Fila genérica de usuario; cambia la acción según el contexto en el que se pinte.
 fun UserRow(
     user: Usuario,
     actionText: String,
@@ -376,6 +394,7 @@ fun UserRow(
     onActionClick: () -> Unit,
     onUserClick: () -> Unit
 ) {
+        // Esta card sirve tanto para amigos como para resultados y solicitudes enviadas.
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -391,6 +410,7 @@ fun UserRow(
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Avatar a la izquierda para reconocer rápido a cada usuario.
             UserAvatar(user = user)
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -398,6 +418,7 @@ fun UserRow(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+                // Nombre del usuario y equipo favorito como contexto adicional.
                 Text(
                     text = user.username,
                     color = Color.White,
@@ -414,6 +435,7 @@ fun UserRow(
 
             if (actionText.isNotEmpty()) {
                 if (actionEnabled) {
+                    // Si hay una acción válida, la mostramos como icono para ocupar menos espacio.
                     IconButton(onClick = onActionClick) {
                         Icon(
                             imageVector = Icons.Default.PersonAdd,
@@ -422,6 +444,7 @@ fun UserRow(
                         )
                     }
                 } else {
+                    // Si no se puede pulsar, dejamos el estado escrito para que se entienda el motivo.
                     Text(
                         text = actionText,
                         color = Color(0x80FFFFFF),
@@ -435,8 +458,10 @@ fun UserRow(
 }
 
 @Composable
+// Avatar reutilizable para amigos, búsquedas y solicitudes.
 fun UserAvatar(user: Usuario) {
     if (user.profileImageUrl.isNotEmpty()) {
+        // Cuando existe foto, se pinta recortada en círculo.
         AsyncImage(
             model = user.profileImageUrl,
             contentDescription = user.username,
@@ -446,6 +471,7 @@ fun UserAvatar(user: Usuario) {
             contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
     } else {
+        // Si no hay imagen, usamos la inicial del username como placeholder.
         Box(
             modifier = Modifier
                 .size(46.dp)

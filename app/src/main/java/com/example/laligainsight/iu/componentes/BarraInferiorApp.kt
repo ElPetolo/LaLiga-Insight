@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
+// Barra inferior común para movernos entre las cuatro secciones principales.
 fun BarraInferiorApp(
     selectedTab: String,
     onHomeClick: () -> Unit,
@@ -25,6 +26,7 @@ fun BarraInferiorApp(
     NavigationBar(
         containerColor = ColoresApp.BottomBar
     ) {
+        // Acceso directo a la pantalla principal de equipos.
         NavigationBarItem(
             selected = selectedTab == "Home",
             onClick = onHomeClick,
@@ -43,6 +45,7 @@ fun BarraInferiorApp(
             }
         )
 
+        // Entrada a clasificación y rankings.
         NavigationBarItem(
             selected = selectedTab == "Rankings",
             onClick = onRankingClick,
@@ -61,6 +64,7 @@ fun BarraInferiorApp(
             }
         )
 
+        // Entrada al comparador de jugadores.
         NavigationBarItem(
             selected = selectedTab == "Compare",
             onClick = onCompareClick,
@@ -79,6 +83,7 @@ fun BarraInferiorApp(
             }
         )
 
+        // Entrada al perfil del usuario.
         NavigationBarItem(
             selected = selectedTab == "Profile",
             onClick = onProfileClick,

@@ -25,6 +25,7 @@ import com.example.laligainsight.R
 import kotlinx.coroutines.launch
 
 @Composable
+// Pantalla de acceso principal: email/contraseña, recuperación y acceso con Google.
 fun PantallaLogin(
     onLoginSuccess: () -> Unit,
     onGoToRegister: () -> Unit
@@ -40,6 +41,7 @@ fun PantallaLogin(
     var loading by remember { mutableStateOf(false) }
 
     FondoAutenticacion {
+        // Columna principal que centra todo el contenido del login.
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -47,6 +49,7 @@ fun PantallaLogin(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Círculo superior con el isotipo de la aplicación.
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -63,6 +66,7 @@ fun PantallaLogin(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Nombre de la app dividido en dos colores para reforzar la identidad visual.
             Row {
                 Text("LaLiga", color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold)
                 Text("Insight", color = ColoresApp.AccentGreen, fontSize = 30.sp, fontWeight = FontWeight.Bold)
@@ -79,12 +83,14 @@ fun PantallaLogin(
 
             Spacer(modifier = Modifier.height(34.dp))
 
+            // Card central que agrupa todas las acciones de autenticación.
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = ColoresApp.CardSoft),
                 shape = RoundedCornerShape(28.dp)
             ) {
                 Column(modifier = Modifier.padding(22.dp)) {
+                    // Título corto para que el usuario sepa en qué flujo está.
                     Text(
                         text = "Bienvenido",
                         color = Color.White,
@@ -100,6 +106,7 @@ fun PantallaLogin(
 
                     Spacer(modifier = Modifier.height(22.dp))
 
+                    // Input del correo.
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -111,6 +118,7 @@ fun PantallaLogin(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // Input de contraseña ocultando el texto.
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -123,9 +131,11 @@ fun PantallaLogin(
 
                     Spacer(modifier = Modifier.height(6.dp))
 
+                    // Enlace auxiliar para iniciar el reseteo de contraseña.
                     TextButton(
                         onClick = {
                             scope.launch {
+                                // Si no hay correo no tiene sentido pedir el reseteo.
                                 if (email.isBlank()) {
                                     error = "Introduce tu correo para recuperar la contraseña"
                                     return@launch
@@ -154,6 +164,7 @@ fun PantallaLogin(
 
                     error?.let {
                         Spacer(modifier = Modifier.height(10.dp))
+                        // Este texto reutiliza el mismo hueco tanto para errores como para avisos del reset.
                         Text(
                             text = it,
                             color = Color(0xFFFF6B6B),
@@ -163,9 +174,11 @@ fun PantallaLogin(
 
                     Spacer(modifier = Modifier.height(22.dp))
 
+                    // Botón principal del login tradicional.
                     Button(
                         onClick = {
                             scope.launch {
+                                // Validaciones básicas antes de llamar a Firebase.
                                 if (email.isBlank() && password.isBlank()) {
                                     error = "Introduce tu correo y contraseña"
                                     return@launch
@@ -213,6 +226,7 @@ fun PantallaLogin(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // Alternativa de acceso con Google.
                     OutlinedButton(
                         onClick = {
                             scope.launch {
@@ -220,6 +234,7 @@ fun PantallaLogin(
                                     loading = true
                                     error = null
 
+                                    // El cliente se encarga de pedir la credencial y abrir sesión en Firebase.
                                     googleAuthClient.signInWithGoogle()
 
                                     onLoginSuccess()
@@ -256,6 +271,7 @@ fun PantallaLogin(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // Enlace para saltar a la pantalla de registro.
                     TextButton(
                         onClick = onGoToRegister,
                         modifier = Modifier.fillMaxWidth()
@@ -272,6 +288,7 @@ fun PantallaLogin(
 }
 
 @Composable
+// Colores comunes para no repetir la configuración visual de todos los inputs de auth.
 fun authTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedTextColor = Color.White,
     unfocusedTextColor = Color.White,

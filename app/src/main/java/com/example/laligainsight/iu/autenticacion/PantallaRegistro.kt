@@ -21,6 +21,7 @@ import com.example.laligainsight.autenticacion.RepositorioAutenticacion
 import kotlinx.coroutines.launch
 
 @Composable
+// Pantalla para crear una cuenta nueva validando los datos antes de registrar al usuario.
 fun PantallaRegistro(
     onRegisterSuccess: () -> Unit,
     onGoToLogin: () -> Unit
@@ -35,6 +36,7 @@ fun PantallaRegistro(
     var loading by remember { mutableStateOf(false) }
 
     FondoAutenticacion {
+        // Estructura general centrada igual que el login para mantener consistencia visual.
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -42,6 +44,7 @@ fun PantallaRegistro(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Logo superior dentro del círculo decorativo.
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -73,6 +76,7 @@ fun PantallaRegistro(
 
             Spacer(modifier = Modifier.height(28.dp))
 
+            // Card que contiene el formulario completo de registro.
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -83,6 +87,7 @@ fun PantallaRegistro(
                 Column(
                     modifier = Modifier.padding(22.dp)
                 ) {
+                    // Campo para el correo de la nueva cuenta.
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -94,6 +99,7 @@ fun PantallaRegistro(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // Campo para la contraseña elegida.
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -106,6 +112,7 @@ fun PantallaRegistro(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // Confirmación para reducir errores al crear la cuenta.
                     OutlinedTextField(
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it },
@@ -118,6 +125,7 @@ fun PantallaRegistro(
 
                     error?.let {
                         Spacer(modifier = Modifier.height(10.dp))
+                        // Mensaje visible para cualquier validación o error que surja en el registro.
                         Text(
                             text = it,
                             color = Color(0xFFFF6B6B),
@@ -127,9 +135,11 @@ fun PantallaRegistro(
 
                     Spacer(modifier = Modifier.height(22.dp))
 
+                    // Acción principal para crear la cuenta en Firebase.
                     Button(
                         onClick = {
                             scope.launch {
+                                // Aquí dejamos todos los checks simples antes de crear la cuenta.
                                 if (email.isBlank() && password.isBlank() && confirmPassword.isBlank()) {
                                     error = "Introduce tus datos para crear la cuenta"
                                     return@launch
@@ -189,6 +199,7 @@ fun PantallaRegistro(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // Enlace para volver al login sin salir del flujo de autenticación.
                     TextButton(
                         onClick = onGoToLogin,
                         modifier = Modifier.fillMaxWidth()
